@@ -14,10 +14,11 @@ namespace Console_App
 
         internal void gameLoop()
         {
-                subMenu("Tic-Tac-Two - game: " + brain.NextMove,
-                    menuItem("M", "makeMove to [x y]", makeMove)
-                ).BeforeDraw(() => ConsoleUI.Visualizer.DrawBoard(brain))
-                .RunUnitExit();
+            subMenu("Tic-Tac-Two - game: " + brain.NextMove,
+                menuItem("M", "makeMove to [x y]", makeMove)
+            )
+            .BeforeDraw(() => ConsoleUI.Visualizer.DrawBoard(brain))
+            .RunUntilReturnOrExit();
         }
 
         private void makeMove(string input)

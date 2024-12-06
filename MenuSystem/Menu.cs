@@ -141,7 +141,7 @@ public class Menu
         return this;
     }
 
-    public void RunUnitExit()
+    public void RunUntilReturnOrExit()
     {
         while(!Run().isReturnOrExit());
     }
