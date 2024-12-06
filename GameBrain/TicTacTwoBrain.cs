@@ -3,7 +3,7 @@
 public class TicTacTwoBrain
 {
     private EGamePiece[,] _gameBoard;
-    private EGamePiece NextMove { get; set; } = EGamePiece.X;
+    public EGamePiece NextMove { get; private set; } = EGamePiece.X;
 
     private GameConfiguration _gameConfiguration;
 

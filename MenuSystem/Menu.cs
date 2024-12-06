@@ -1,34 +1,32 @@
 namespace MenuSystem;
 
-
 public class Menu
 {
+    public static readonly string SHORTCUT_EXIT = "E";
+    public static readonly string SHORTCUT_RETURN = "R";
+    public static readonly string SHORTCUT_RETURN_MAIN = "M";
+
     private string MenuHeader { get; set; }
     private readonly string _menuDivider;
     private List<MenuItem> MenuItems { get; set; }
-    
+
     // TODO: validate menu items for shortcut conflict!
-    private MenuItem _menuItemExit = new MenuItem()
+    private MenuItem _menuItemExit = new()
     {
-        Shortcut = "E",
+        Shortcut = SHORTCUT_EXIT,
         Title = "Exit"
     };
-    private MenuItem _menuItemReturn = new MenuItem()
+    private MenuItem _menuItemReturn = new()
     {
-        Shortcut = "R",
+        Shortcut = SHORTCUT_RETURN,
         Title = "Return"
     };
-    private MenuItem _menuItemReturnMain = new MenuItem()
+    private MenuItem _menuItemReturnMain = new()
     {
-        Shortcut = "M",
+        Shortcut = SHORTCUT_RETURN_MAIN,
         Title = "return to Main menu"
     };
     private EMenuLevel MenuLevel { get; set; }
-    public void SetMenuItemAction(string shortCut, Func<string> action)
-    {
-        var menuItem = MenuItems.Single(m => m.Shortcut == shortCut);
-        menuItem.MenuItemAction = action;
-    }
 
     public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems,
         char dividerSymbol = '=')
@@ -65,30 +63,26 @@ public class Menu
 
     public string Run()
     {
-        Console.Clear();
+        //Console.Clear();
         do
         {
-            var menuItem = DisplayMenuUserChoice();
-            var menuReturnValue = "";
+            var choice = DisplayMenuUserChoice();
+            var menuItem = choice.Item1;
+            var userInput = choice.Item2;
             if (menuItem.MenuItemAction != null)
             {
-                menuReturnValue = menuItem.MenuItemAction();
-                return menuReturnValue;
+                return menuItem.MenuItemAction();
+            }
+            if (menuItem.MenuItemInputAction != null)
+            {
+                return menuItem.MenuItemInputAction(userInput);
             }
 
-            if (menuItem.Shortcut == _menuItemReturn.Shortcut)
+            if (menuItem.Shortcut == _menuItemReturn.Shortcut ||
+                menuItem.Shortcut == _menuItemReturnMain.Shortcut ||
+                menuItem.Shortcut == _menuItemExit.Shortcut)
             {
                 return menuItem.Shortcut;
-            }
-            
-            if (menuItem.Shortcut == _menuItemExit.Shortcut || menuReturnValue == _menuItemExit.Shortcut)
-            {
-                return _menuItemExit.Shortcut;
-            }
-
-            if ((menuItem.Shortcut == _menuItemReturnMain.Shortcut || menuReturnValue == _menuItemReturnMain.Shortcut) && MenuLevel != EMenuLevel.Main)
-            {
-                return _menuItemReturnMain.Shortcut;
             }
             
         } while (true);
@@ -99,8 +93,9 @@ public class Menu
         return new string(symbol, length);
     }
 
-    private MenuItem DisplayMenuUserChoice()
+    private Tuple<MenuItem, string> DisplayMenuUserChoice()
     {
+
         var userInput = "";
         do
         {
@@ -118,17 +113,14 @@ public class Menu
                 userInput = userInput.ToLower();
                 foreach (var menuItem in MenuItems)
                 {
-                    if (menuItem.Shortcut.ToLower() != userInput) continue;
+                    if (!userInput.StartsWith(menuItem.Shortcut.ToLower())) continue;
 
-                    return menuItem;
+                    return new Tuple<MenuItem, string>(menuItem, userInput.Substring(menuItem.Shortcut.Length));
                 }
                 Console.Clear();
                 Console.WriteLine("Please choose from what is available!");
-                
             }
         } while (true);
-
-        
     }
 
     private void DrawMenu()

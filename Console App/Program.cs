@@ -2,6 +2,7 @@
 using DAL;
 using GameBrain;
 using static MenuSystem.MenuBuilder;
+using static MenuSystem.Menu;
 using Console_App;
 
 IConfigRepository configRepository = new ConfigRepository();
@@ -14,10 +15,18 @@ var mainMenu = menu("TIC-TAC-TWO",
             menuItem("O", "O starts", DummyMethod)
         )
     ),
-    menuItem("2", "New game", () => NewGame(configController.SelectConfig()))
+    menuItem("2", "New game", () => NewGame(configController.SelectConfig())),
+    menuItem("3", "New default game", NewGameDefault)
 );
 
-while (!"E".Equals(mainMenu.Run()));
+string NewGameDefault()
+{
+    NewGame(configRepository.GetConfigurationByName(
+            configRepository.GetConfigurationNames()[0]));
+    return "";
+}
+
+while (!SHORTCUT_EXIT.Equals(mainMenu.Run()));
 
 return;
 //=========================================================
@@ -38,16 +47,9 @@ string NewGame(GameConfiguration config)
         return "R";
     }
     var gameInstance = new TicTacTwoBrain(config);
-    Console.Clear();
-    Console.WriteLine();
-    ConsoleUI.Visualizer.DrawBoard(gameInstance);
-    Console.WriteLine("Give me coordinates <x> <y>:");
-    Console.Write(">");
-    var input = Console.ReadLine()!;
-    var inputSplit = input.Split(",");
-    var inputX = int.Parse(inputSplit[0]);
-    var inputY = int.Parse(inputSplit[1]);
-    gameInstance.MakeMove(inputX, inputY);
+    var gameController = new GameController(gameInstance);
+    return gameController.gameLoop();
+    
     // loop
     // draw the board again
     // ask input again, validate input

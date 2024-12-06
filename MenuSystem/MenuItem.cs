@@ -6,6 +6,7 @@ public class MenuItem
     private string _shortcut = default!;
 
     public Func<string>? MenuItemAction { get; set; }
+    public Func<string, string>? MenuItemInputAction { get; set; }
 
     public string Title
     {

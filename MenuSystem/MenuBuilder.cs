@@ -12,6 +12,16 @@
             };
         }
 
+        public static MenuItem menuItem(string shortcut, string title, Func<string, string> actionWithInput)
+        {
+            return new MenuItem()
+            {
+                Shortcut = shortcut,
+                Title = title,
+                MenuItemInputAction = actionWithInput
+            };
+        }
+
         public static MenuItem menuItem(string shortcut, string title, Menu submenu)
         {
             return menuItem(shortcut, title, submenu.Run);
