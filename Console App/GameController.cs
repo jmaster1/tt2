@@ -12,40 +12,20 @@ namespace Console_App
             this.brain = brain;
         }
 
-        internal string gameLoop()
+        internal void gameLoop()
         {
-            Exception? lastError = null;
-            for (; ; )
-            {
-                try
-                {
-                    Console.Clear();
-                    ConsoleUI.Visualizer.DrawBoard(brain);
-                    if (lastError != null)
-                    {
-                        Console.WriteLine("-------------!!!-------------");
-                        Console.WriteLine(lastError.Message);
-                        Console.WriteLine("-------------!!!-------------");
-                        lastError = null;
-                    }
-                    subMenu("Tic-Tac-Two - game: " + brain.NextMove,
-                        menuItem("M", "makeMove to [x y]", makeMove)
-                    )
-                    .Run();
-                } catch(Exception ex)
-                {
-                    lastError = ex;
-                }
-            }
-            return "";
+                subMenu("Tic-Tac-Two - game: " + brain.NextMove,
+                    menuItem("M", "makeMove to [x y]", makeMove)
+                ).BeforeDraw(() => ConsoleUI.Visualizer.DrawBoard(brain))
+                .RunUnitExit();
         }
 
-        private string makeMove(string input)
+        private void makeMove(string input)
         {
             int x = 0, y = 0;
             try
             {
-                var tokens = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                var tokens = input.Split([' '], StringSplitOptions.RemoveEmptyEntries);
                 x = int.Parse(tokens[0]);
                 y = int.Parse(tokens[1]);
             } catch(Exception)
@@ -53,7 +33,6 @@ namespace Console_App
                 throw new InvalidDataException("Bad input");
             }            
             brain.MakeMove(x, y);
-            return "?";
         }
     }
 }

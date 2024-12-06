@@ -15,47 +15,39 @@ var mainMenu = menu("TIC-TAC-TWO",
             menuItem("O", "O starts", DummyMethod)
         )
     ),
-    menuItem("2", "New game", () => NewGame(configController.SelectConfig())),
-    menuItem("3", "New default game", NewGameDefault)
+    menuItem("2", "New game", NewGameSelectConfig),
+    menuItem("3", "New default game", NewGameDefaultConfig)
 );
 
-string NewGameDefault()
+void NewGame(GameConfiguration config)
+{
+    var gameInstance = new TicTacTwoBrain(config);
+    var gameController = new GameController(gameInstance);
+    gameController.gameLoop();
+}
+
+void NewGameSelectConfig()
+{
+    GameConfiguration config = configController.SelectConfig();
+    NewGame(config);
+}
+
+void NewGameDefaultConfig()
 {
     NewGame(configRepository.GetConfigurationByName(
             configRepository.GetConfigurationNames()[0]));
-    return "";
 }
 
-while (!SHORTCUT_EXIT.Equals(mainMenu.Run()));
+while (!SHORTCUT_EXIT.Equals(mainMenu.Run().item.Shortcut));
 
 return;
 //=========================================================
 
-string DummyMethod()
+void DummyMethod()
 {
     Console.Clear();
     Console.Write("Just press any key to get out of here!");
     Console.ReadKey();
-    return "foobar";
 }
 
 
-string NewGame(GameConfiguration config)
-{
-    if(config == default)
-    {
-        return "R";
-    }
-    var gameInstance = new TicTacTwoBrain(config);
-    var gameController = new GameController(gameInstance);
-    return gameController.gameLoop();
-    
-    // loop
-    // draw the board again
-    // ask input again, validate input
-    // is game over?
-    
-    return "";
-
-
-}

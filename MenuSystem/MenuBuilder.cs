@@ -2,7 +2,7 @@
 {
     public static class MenuBuilder
     {
-        public static MenuItem menuItem(string shortcut, string title, Func<string> action)
+        public static MenuItem menuItem(string shortcut, string title, Action action)
         {
             return new MenuItem()
             {
@@ -12,7 +12,7 @@
             };
         }
 
-        public static MenuItem menuItem(string shortcut, string title, Func<string, string> actionWithInput)
+        public static MenuItem menuItem(string shortcut, string title, Action<string> actionWithInput)
         {
             return new MenuItem()
             {
@@ -24,7 +24,7 @@
 
         public static MenuItem menuItem(string shortcut, string title, Menu submenu)
         {
-            return menuItem(shortcut, title, submenu.Run);
+            return menuItem(shortcut, title, () => submenu.Run());
         }
 
         public static Menu menu(string header, params MenuItem[] items)

@@ -2,6 +2,8 @@ namespace MenuSystem;
 
 public class Menu
 {
+    public static bool CLEAR_CONSSOLE = true;
+
     public static readonly string SHORTCUT_EXIT = "E";
     public static readonly string SHORTCUT_RETURN = "R";
     public static readonly string SHORTCUT_RETURN_MAIN = "M";
@@ -27,6 +29,8 @@ public class Menu
         Title = "return to Main menu"
     };
     private EMenuLevel MenuLevel { get; set; }
+
+    public Action? beforeDraw;
 
     public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems,
         char dividerSymbol = '=')
@@ -61,31 +65,26 @@ public class Menu
 
     }
 
-    public string Run()
+    public MenuSelection Run()
     {
-        //Console.Clear();
-        do
+        Exception? error = null;
+        while (true)
         {
-            var choice = DisplayMenuUserChoice();
-            var menuItem = choice.Item1;
-            var userInput = choice.Item2;
-            if (menuItem.MenuItemAction != null)
+            try
             {
-                return menuItem.MenuItemAction();
-            }
-            if (menuItem.MenuItemInputAction != null)
+                DrawMenu(error);
+                var choice = ProcessInput();
+                var menuItem = choice.item;
+                var userInput = choice.input;
+                menuItem.MenuItemAction?.Invoke();
+                menuItem.MenuItemInputAction?.Invoke(userInput);
+                return choice;
+            } catch(Exception ex)
             {
-                return menuItem.MenuItemInputAction(userInput);
+                error = ex;
             }
 
-            if (menuItem.Shortcut == _menuItemReturn.Shortcut ||
-                menuItem.Shortcut == _menuItemReturnMain.Shortcut ||
-                menuItem.Shortcut == _menuItemExit.Shortcut)
-            {
-                return menuItem.Shortcut;
-            }
-            
-        } while (true);
+        }
     }
 
     private static string CreateDivider(int length, char symbol)
@@ -93,46 +92,57 @@ public class Menu
         return new string(symbol, length);
     }
 
-    private Tuple<MenuItem, string> DisplayMenuUserChoice()
+    private MenuSelection ProcessInput()
     {
 
         var userInput = "";
         do
-        {
-            Console.WriteLine();
-            DrawMenu();
-            
+        {            
             userInput = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(userInput))
             {
-                Console.Clear();
-                Console.WriteLine("Please choose an option!");
+                throw new InvalidOperationException("Please choose an option!");
             }
-            else
+            userInput = userInput.ToLower();
+            foreach (var menuItem in MenuItems)
             {
-                userInput = userInput.ToLower();
-                foreach (var menuItem in MenuItems)
-                {
-                    if (!userInput.StartsWith(menuItem.Shortcut.ToLower())) continue;
-
-                    return new Tuple<MenuItem, string>(menuItem, userInput.Substring(menuItem.Shortcut.Length));
-                }
-                Console.Clear();
-                Console.WriteLine("Please choose from what is available!");
+                if (!userInput.StartsWith(menuItem.Shortcut, StringComparison.CurrentCultureIgnoreCase)) continue;
+                return new MenuSelection(menuItem, userInput.Substring(menuItem.Shortcut.Length));
             }
+            throw new InvalidOperationException("Please choose from what is available!");
         } while (true);
     }
 
-    private void DrawMenu()
+    private void DrawMenu(Exception error)
     {
+        if(CLEAR_CONSSOLE)
+        {
+            Console.Clear();
+        }
+        beforeDraw?.Invoke();
         Console.WriteLine(MenuHeader);
         Console.WriteLine(_menuDivider);
-
+        if(error != null)
+        {
+            Console.WriteLine("ERROR: " + error.Message);
+            Console.WriteLine(_menuDivider);
+        }
         foreach (var t in MenuItems)
         {
             Console.WriteLine(t);
         }
         Console.WriteLine();
         Console.Write(">");
+    }
+
+    public Menu BeforeDraw(Action action)
+    {
+        beforeDraw = action;
+        return this;
+    }
+
+    public void RunUnitExit()
+    {
+        while(!Run().isReturnOrExit());
     }
 }
