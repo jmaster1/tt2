@@ -2,10 +2,10 @@
 
 namespace DAL;
 
-public class ConfigRepository
+public class ConfigRepository : IConfigRepository
 {
-    private List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
-    {
+    private List<GameConfiguration> _gameConfigurations =
+    [
         new GameConfiguration()
         {
             Name = "Classical"
@@ -18,7 +18,7 @@ public class ConfigRepository
             WinSequence = 4,
             MovePieceAfterNMoves = 0
         },
-    };
+    ];
 
     public List<string> GetConfigurationNames()
     {
@@ -32,5 +32,10 @@ public class ConfigRepository
     {
         return _gameConfigurations
             .Single(c => c.Name == name);
+    }
+
+    public void SaveConfiguration(GameConfiguration gameConfig)
+    {
+        throw new NotImplementedException();
     }
 }

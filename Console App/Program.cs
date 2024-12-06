@@ -1,21 +1,23 @@
-﻿ 
+﻿
 using DAL;
 using GameBrain;
-using MenuSystem;
-using MenuItem = MenuSystem.MenuItem;
 using static MenuSystem.MenuBuilder;
+using Console_App;
 
-var configRepository = new ConfigRepository();
+IConfigRepository configRepository = new ConfigRepository();
+var configController = new ConfigController(configRepository);
 
-menu("TIC-TAC-TWO",
-    menuItem("1", "Options", 
+var mainMenu = menu("TIC-TAC-TWO",
+    menuItem("1", "Options",
         subMenu("TIC-TAC-TWO Options",
             menuItem("X", "X starts", DummyMethod),
             menuItem("O", "O starts", DummyMethod)
         )
     ),
-    menuItem("2", "New game", NewGame)
-).Run();
+    menuItem("2", "New game", () => NewGame(configController.SelectConfig()))
+);
+
+while (!"E".Equals(mainMenu.Run()));
 
 return;
 //=========================================================
@@ -29,35 +31,13 @@ string DummyMethod()
 }
 
 
-string NewGame()
+string NewGame(GameConfiguration config)
 {
-    var configMenuItems = new List<MenuItem>();
-
-    for (var i = 0; i < configRepository.GetConfigurationNames().Count; i++)
+    if(config == default)
     {
-        var returnValue = i.ToString();
-        configMenuItems.Add(new MenuItem()
-        {
-            Title = configRepository.GetConfigurationNames()[i],
-            Shortcut = (i+1).ToString(),
-            MenuItemAction = () => returnValue
-        });
+        return "R";
     }
-    var configMenu = new Menu(EMenuLevel.Secondary,
-        "Tic-Tac-Two - choose configuration",
-        configMenuItems, true, '+');
-    
-    var chosenConfigShortcut = configMenu.Run();
-    
-    if (!int.TryParse(chosenConfigShortcut, out var configNo))
-    {
-        return chosenConfigShortcut;
-    }
-    var chosenConfig = configRepository.GetConfigurationByName(
-        configRepository.GetConfigurationNames()[configNo]
-        );
-    
-    var gameInstance = new TicTacTwoBrain(chosenConfig);
+    var gameInstance = new TicTacTwoBrain(config);
     Console.Clear();
     Console.WriteLine();
     ConsoleUI.Visualizer.DrawBoard(gameInstance);

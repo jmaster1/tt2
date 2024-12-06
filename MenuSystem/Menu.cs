@@ -24,7 +24,6 @@ public class Menu
         Title = "return to Main menu"
     };
     private EMenuLevel MenuLevel { get; set; }
-    private bool CanDrawBoard { get; set; }
     public void SetMenuItemAction(string shortCut, Func<string> action)
     {
         var menuItem = MenuItems.Single(m => m.Shortcut == shortCut);
@@ -32,7 +31,7 @@ public class Menu
     }
 
     public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems,
-        bool canDrawBoard = false, char dividerSymbol = '=')
+        char dividerSymbol = '=')
     {
         if (String.IsNullOrWhiteSpace(menuHeader))
         {
@@ -49,7 +48,6 @@ public class Menu
         _menuDivider = CreateDivider(dividerLength, dividerSymbol);
         MenuItems = menuItems;
         MenuLevel = menuLevel;
-        CanDrawBoard = canDrawBoard;
         
         if (MenuLevel != EMenuLevel.Main)
         {
@@ -75,7 +73,7 @@ public class Menu
             if (menuItem.MenuItemAction != null)
             {
                 menuReturnValue = menuItem.MenuItemAction();
-                if (CanDrawBoard) return menuReturnValue;
+                return menuReturnValue;
             }
 
             if (menuItem.Shortcut == _menuItemReturn.Shortcut)
