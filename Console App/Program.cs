@@ -3,46 +3,19 @@ using DAL;
 using GameBrain;
 using MenuSystem;
 using MenuItem = MenuSystem.MenuItem;
+using static MenuSystem.MenuBuilder;
 
 var configRepository = new ConfigRepository();
-var deepMenu = new Menu(EMenuLevel.Deep, "Tic-Tac-Two DEEP", [
-    new MenuItem()
-    {
-        Shortcut = "Y",
-        Title = "YYYYYYY",
-        MenuItemAction = DummyMethod
-    }
-]);
-var optionsMenu = new Menu(EMenuLevel.Secondary,
-    "TIC-TAC-TWO Options", menuItems: [
-    new MenuItem()
-    {
-        Shortcut = "X",
-        Title = "X starts",
-        MenuItemAction = deepMenu.Run
-    }, new MenuItem()
-    {
-    Shortcut = "O",
-    Title = "O starts",
-    MenuItemAction = DummyMethod
-    }
-]);
-var mainMenu = new Menu(EMenuLevel.Main, "TIC-TAC-TWO", [
-    new MenuItem()
-    {
-        Shortcut = "1",
-        Title = "Options",
-        MenuItemAction = optionsMenu.Run
-    },
 
-    new MenuItem()
-    {
-        Shortcut = "2",
-        Title = "New Game",
-        MenuItemAction = NewGame
-    }
-]);
-mainMenu.Run();
+menu("TIC-TAC-TWO",
+    menuItem("1", "Options", 
+        subMenu("TIC-TAC-TWO Options",
+            menuItem("X", "X starts", DummyMethod),
+            menuItem("O", "O starts", DummyMethod)
+        )
+    ),
+    menuItem("2", "New game", NewGame)
+).Run();
 
 return;
 //=========================================================
