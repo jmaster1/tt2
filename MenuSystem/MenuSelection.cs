@@ -13,8 +13,8 @@ public class MenuSelection
         this.input = input;
     }
 
-    public bool isReturnOrExit()
+    public bool isExit()
     {
-        return item.Shortcut.Equals(Menu.SHORTCUT_EXIT) || item.Shortcut.Equals(Menu.SHORTCUT_RETURN);
+        return item.Shortcut.Equals(Menu.SHORTCUT_EXIT);
     }
 }

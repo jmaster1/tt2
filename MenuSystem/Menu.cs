@@ -5,35 +5,20 @@ public class Menu
     public static bool CLEAR_CONSSOLE = true;
 
     public static readonly string SHORTCUT_EXIT = "E";
-    public static readonly string SHORTCUT_RETURN = "R";
-    public static readonly string SHORTCUT_RETURN_MAIN = "M";
 
     private string MenuHeader { get; set; }
     private readonly string _menuDivider;
     private List<MenuItem> MenuItems { get; set; }
 
-    // TODO: validate menu items for shortcut conflict!
     private MenuItem _menuItemExit = new()
     {
         Shortcut = SHORTCUT_EXIT,
         Title = "Exit"
     };
-    private MenuItem _menuItemReturn = new()
-    {
-        Shortcut = SHORTCUT_RETURN,
-        Title = "Return"
-    };
-    private MenuItem _menuItemReturnMain = new()
-    {
-        Shortcut = SHORTCUT_RETURN_MAIN,
-        Title = "return to Main menu"
-    };
-    private EMenuLevel MenuLevel { get; set; }
 
     public Action? beforeDraw;
 
-    public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems,
-        char dividerSymbol = '=')
+    public Menu(string menuHeader, List<MenuItem> menuItems, char dividerSymbol = '=')
     {
         if (String.IsNullOrWhiteSpace(menuHeader))
         {
@@ -49,20 +34,7 @@ public class Menu
         var dividerLength = menuHeader.Length;
         _menuDivider = CreateDivider(dividerLength, dividerSymbol);
         MenuItems = menuItems;
-        MenuLevel = menuLevel;
-        
-        if (MenuLevel != EMenuLevel.Main)
-        {
-            MenuItems.Add(_menuItemReturn);
-        }
-        
-        if (MenuLevel == EMenuLevel.Deep)
-        {
-            MenuItems.Add(_menuItemReturnMain);
-        }
-
         MenuItems.Add(_menuItemExit);
-
     }
 
     public MenuSelection Run()
@@ -143,6 +115,6 @@ public class Menu
 
     public void RunUntilReturnOrExit()
     {
-        while(!Run().isReturnOrExit());
+        while(!Run().isExit());
     }
 }

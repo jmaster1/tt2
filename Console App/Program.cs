@@ -2,7 +2,6 @@
 using DAL;
 using GameBrain;
 using static MenuSystem.MenuBuilder;
-using static MenuSystem.Menu;
 using Console_App;
 
 IConfigRepository configRepository = new ConfigRepository();
@@ -18,6 +17,11 @@ var mainMenu = menu("TIC-TAC-TWO",
     menuItem("2", "New game", NewGameSelectConfig),
     menuItem("3", "New default game", NewGameDefaultConfig)
 );
+
+void DummyMethod()
+{
+    throw new NotImplementedException();
+}
 
 void NewGame(GameConfiguration config)
 {
@@ -38,16 +42,4 @@ void NewGameDefaultConfig()
             configRepository.GetConfigurationNames()[0]));
 }
 
-while (!SHORTCUT_EXIT.Equals(mainMenu.Run().item.Shortcut));
-
-return;
-//=========================================================
-
-void DummyMethod()
-{
-    Console.Clear();
-    Console.Write("Just press any key to get out of here!");
-    Console.ReadKey();
-}
-
-
+mainMenu.RunUntilReturnOrExit();

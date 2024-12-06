@@ -29,12 +29,12 @@
 
         public static Menu menu(string header, params MenuItem[] items)
         {
-            return new Menu(EMenuLevel.Main, header, [.. items]);
+            return new Menu(header, [.. items]);
         }
 
         public static Menu subMenu(string header, params MenuItem[] items)
         {
-            return new Menu(EMenuLevel.Secondary, header, [.. items]);
+            return new Menu(header, [.. items]);
         }
     }
 }
