@@ -21,7 +21,7 @@ namespace Console_App
                 configRepository.GetConfigurationNames()
                     .Select((name, index) => menuItem(index++.ToString(), name, () => chosenName = name))
                     .ToArray())
-            .Run();
+            .RunUntilReturnOrExit();
             return chosenName == null ? default : configRepository.GetConfigurationByName(chosenName);
         }
     }

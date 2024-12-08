@@ -4,11 +4,11 @@ using GameBrain;
 using static MenuSystem.MenuBuilder;
 using Console_App;
 
-IConfigRepository configRepository = new ConfigRepository();
+IConfigRepository configRepository = new ConfigRepositoryJson();
 var configController = new ConfigController(configRepository);
 
 var mainMenu = menu("TIC-TAC-TWO",
-    menuItem("1", "Options",
+    menuItem("1", "Configurations",
         subMenu("TIC-TAC-TWO Options",
             menuItem("X", "X starts", DummyMethod),
             menuItem("O", "O starts", DummyMethod)

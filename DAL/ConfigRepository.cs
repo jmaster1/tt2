@@ -13,10 +13,11 @@ public class ConfigRepository : IConfigRepository
         new GameConfiguration()
         {
             Name = "Big board",
-            BoardSizeWidth = 10,
-            BoardSizeHeight = 10,
+            BoardSize = new System.Drawing.Size(10, 10),
+            GridSize = new System.Drawing.Size(4, 4),
+            GridPos = new System.Drawing.Point(2, 2),
             WinSequence = 4,
-            MovePieceAfterNMoves = 0
+            MovePieceAfterNMoves = 4
         },
     ];
 
