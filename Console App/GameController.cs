@@ -1,39 +1,30 @@
 ﻿using GameBrain;
+using MenuSystem;
 using static MenuSystem.MenuBuilder;
 
-namespace Console_App
+namespace Console_App;
+
+internal class GameController(TicTacTwoBrain brain)
 {
-    internal class GameController
+    internal void GameLoop()
     {
-        private readonly TicTacTwoBrain brain;
-
-        public GameController(TicTacTwoBrain brain)
-        {
-            this.brain = brain;
-        }
-
-        internal void gameLoop()
-        {
-            subMenu("Tic-Tac-Two - game: " + brain.NextMove,
-                menuItem("M", "makeMove to [x y]", makeMove)
-            )
+        MenuItem[] items = [MenuItem("M", "makeMove to [x y]", MakeMove)];
+        new Menu("Tic-Tac-Two - game: " + brain.NextMove, [.. items])
             .BeforeDraw(() => ConsoleUI.Visualizer.DrawBoard(brain))
-            .RunUntilReturnOrExit();
-        }
+            .RunUntilExit();
+    }
 
-        private void makeMove(string input)
+    private void MakeMove(MenuSelection input)
+    {
+        int x, y;
+        try
         {
-            int x = 0, y = 0;
-            try
-            {
-                var tokens = input.Split([' '], StringSplitOptions.RemoveEmptyEntries);
-                x = int.Parse(tokens[0]);
-                y = int.Parse(tokens[1]);
-            } catch(Exception)
-            {
-                throw new InvalidDataException("Bad input");
-            }            
-            brain.MakeMove(x, y);
-        }
+            x = input.GetInt(0);
+            y = input.GetInt(1);
+        } catch(Exception)
+        {
+            throw new InvalidDataException("Bad input");
+        }            
+        brain.MakeMove(x, y);
     }
 }

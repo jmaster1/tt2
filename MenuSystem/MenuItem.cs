@@ -3,21 +3,27 @@
 public class MenuItem
 {
     private string _title = default!;
+    private Func<string>? _titleFunc;
     private string _shortcut = default!;
 
     public Action? MenuItemAction { get; set; }
-    public Action<string>? MenuItemInputAction { get; set; }
+    public Action<MenuSelection>? MenuItemInputAction { get; set; }
 
     public string Title
     {
-        get => _title;
+        get => _titleFunc == null ? _title : _titleFunc.Invoke();
         set
         {
-            if (String.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentException("Title cannot be empty!");
-            }
             _title = value;
+        }
+    }
+    
+    public Func<string>? TitleFunc
+    {
+        get => _titleFunc;
+        set
+        {
+            _titleFunc = value;
         }
     }
 

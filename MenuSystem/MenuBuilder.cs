@@ -2,7 +2,7 @@
 {
     public static class MenuBuilder
     {
-        public static MenuItem menuItem(string shortcut, string title, Action action)
+        public static MenuItem MenuItem(string shortcut,string title, Action action)
         {
             return new MenuItem()
             {
@@ -11,8 +11,18 @@
                 MenuItemAction = action
             };
         }
+        
+        public static MenuItem MenuItem(string shortcut, Func<string> titleFunc, Action action)
+        {
+            return new MenuItem()
+            {
+                Shortcut = shortcut,
+                TitleFunc = titleFunc,
+                MenuItemAction = action
+            };
+        }
 
-        public static MenuItem menuItem(string shortcut, string title, Action<string> actionWithInput)
+        public static MenuItem MenuItem(string shortcut, string title, Action<MenuSelection> actionWithInput)
         {
             return new MenuItem()
             {
@@ -21,18 +31,23 @@
                 MenuItemInputAction = actionWithInput
             };
         }
-
-        public static MenuItem menuItem(string shortcut, string title, Menu submenu)
+        
+        public static MenuItem MenuItem(string shortcut, Func<string> titleFunc, Action<MenuSelection> actionWithInput)
         {
-            return menuItem(shortcut, title, () => submenu.Run());
+            return new MenuItem()
+            {
+                Shortcut = shortcut,
+                TitleFunc = titleFunc,
+                MenuItemInputAction = actionWithInput
+            };
         }
 
-        public static Menu menu(string header, params MenuItem[] items)
+        public static MenuItem MenuItem(string shortcut, string title, Menu submenu)
         {
-            return new Menu(header, [.. items]);
+            return MenuItem(shortcut, title, () => submenu.Run());
         }
 
-        public static Menu subMenu(string header, params MenuItem[] items)
+        public static Menu Menu(string header, params MenuItem[] items)
         {
             return new Menu(header, [.. items]);
         }

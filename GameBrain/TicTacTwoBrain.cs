@@ -10,7 +10,7 @@ public class TicTacTwoBrain
     public TicTacTwoBrain(GameConfiguration gameConfiguration)
     {
         _gameConfiguration = gameConfiguration;
-        _gameBoard = new EGamePiece[_gameConfiguration.BoardSizeWidth, _gameConfiguration.BoardSizeHeight];
+        _gameBoard = new EGamePiece[_gameConfiguration.BoardWidth, _gameConfiguration.BoardHeight];
     }
 
     public EGamePiece[,] GameBoard

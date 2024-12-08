@@ -2,9 +2,9 @@
 
 namespace DAL;
 
-public class ConfigRepository : IConfigRepository
+public class ConfigRepositoryPredefined : IConfigRepository
 {
-    private List<GameConfiguration> _gameConfigurations =
+    private readonly List<GameConfiguration> _gameConfigurations =
     [
         new GameConfiguration()
         {
@@ -13,9 +13,12 @@ public class ConfigRepository : IConfigRepository
         new GameConfiguration()
         {
             Name = "Big board",
-            BoardSize = new System.Drawing.Size(10, 10),
-            GridSize = new System.Drawing.Size(4, 4),
-            GridPos = new System.Drawing.Point(2, 2),
+            BoardWidth = 10,
+            BoardHeight = 10,
+            GridWidth = 4,
+            GridHeight = 4,
+            GridX = 3,
+            GridY = 3,
             WinSequence = 4,
             MovePieceAfterNMoves = 4
         },

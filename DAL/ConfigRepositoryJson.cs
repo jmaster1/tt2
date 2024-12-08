@@ -27,7 +27,7 @@ public class ConfigRepositoryJson : AbstractRepositoryJson<GameConfiguration>, I
         List<string> names = ListNames();
         if (names.Count == 0)
         {
-            var hardcodedRepo = new ConfigRepository();
+            var hardcodedRepo = new ConfigRepositoryPredefined();
             var configurationNames = hardcodedRepo.GetConfigurationNames();
             foreach (var name in configurationNames)
             {
@@ -37,7 +37,7 @@ public class ConfigRepositoryJson : AbstractRepositoryJson<GameConfiguration>, I
         }
     }
 
-    public override string GetExtension()
+    protected override string GetExtension()
     {
         return ".config.json";
     }

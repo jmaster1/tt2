@@ -1,24 +1,20 @@
-using System.Text.Json;
-
 namespace DAL;
 
 public abstract class AbstractRepositoryJson<T>
 {
-    public static string BasePath = 
+    private readonly string _basePath = 
         Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + 
         Path.DirectorySeparatorChar + 
         "tic-tac-two" + 
         Path.DirectorySeparatorChar;
 
-    private JsonSerializerOptions jsonOptions = new() { WriteIndented = true };
+    protected abstract string GetExtension();
 
-    public abstract string GetExtension();
-
-    public List<string> ListNames()
+    protected List<string> ListNames()
     {
         CheckAndCreateBasePath();
         return Directory
-            .GetFiles(BasePath, "*" + GetExtension())
+            .GetFiles(_basePath, "*" + GetExtension())
             .Select(fullFileName =>
                 Path.GetFileNameWithoutExtension(
                     Path.GetFileNameWithoutExtension(fullFileName)
@@ -27,27 +23,27 @@ public abstract class AbstractRepositoryJson<T>
             .ToList();
     }
 
-    public T? GetByName(string name)
+    protected T? GetByName(string name)
     {
         CheckAndCreateBasePath();
-        var jsonStr = File.ReadAllText(BasePath + name + GetExtension());
-        var entity = JsonSerializer.Deserialize<T>(jsonStr);
+        var jsonStr = File.ReadAllText(_basePath + name + GetExtension());
+        var entity = JsonStringSerializer.FromString<T>(jsonStr);
         return entity;
     }
 
-    public void Save(T entity, string name)
+    protected void Save(T entity, string name)
     {
         CheckAndCreateBasePath();
-        var jsonStr = JsonSerializer.Serialize(entity, jsonOptions);
-        File.WriteAllText(BasePath + name + GetExtension(), jsonStr);
+        var jsonStr = JsonStringSerializer.ToString(entity);
+        File.WriteAllText(_basePath + name + GetExtension(), jsonStr);
     }
 
 
     private void CheckAndCreateBasePath()
     {
-        if (!Directory.Exists(BasePath))
+        if (!Directory.Exists(_basePath))
         {
-            Directory.CreateDirectory(BasePath);
+            Directory.CreateDirectory(_basePath);
         }
     }
 }

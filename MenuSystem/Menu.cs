@@ -2,9 +2,9 @@ namespace MenuSystem;
 
 public class Menu
 {
-    public static bool CLEAR_CONSSOLE = true;
+    public static bool ClearConssole = true;
 
-    public static readonly string SHORTCUT_EXIT = "E";
+    public static readonly string ShortcutExit = "E";
 
     private string MenuHeader { get; set; }
     private readonly string _menuDivider;
@@ -12,7 +12,7 @@ public class Menu
 
     private MenuItem _menuItemExit = new()
     {
-        Shortcut = SHORTCUT_EXIT,
+        Shortcut = ShortcutExit,
         Title = "Exit"
     };
 
@@ -46,16 +46,15 @@ public class Menu
             {
                 DrawMenu(error);
                 var choice = ProcessInput();
-                var menuItem = choice.item;
-                var userInput = choice.input;
+                var menuItem = choice.Item;
+                var userInput = choice.Input;
                 menuItem.MenuItemAction?.Invoke();
-                menuItem.MenuItemInputAction?.Invoke(userInput);
+                menuItem.MenuItemInputAction?.Invoke(choice);
                 return choice;
             } catch(Exception ex)
             {
                 error = ex;
             }
-
         }
     }
 
@@ -66,9 +65,7 @@ public class Menu
 
     private MenuSelection ProcessInput()
     {
-
         var userInput = "";
-        do
         {            
             userInput = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(userInput))
@@ -76,18 +73,18 @@ public class Menu
                 throw new InvalidOperationException("Please choose an option!");
             }
             userInput = userInput.ToLower();
-            foreach (var menuItem in MenuItems)
+            foreach (var menuItem in MenuItems.Where(menuItem => userInput.StartsWith(menuItem.Shortcut[..1], 
+                         StringComparison.CurrentCultureIgnoreCase)))
             {
-                if (!userInput.StartsWith(menuItem.Shortcut, StringComparison.CurrentCultureIgnoreCase)) continue;
-                return new MenuSelection(menuItem, userInput.Substring(menuItem.Shortcut.Length));
+                return new MenuSelection(menuItem, userInput.Substring(1).Trim());
             }
             throw new InvalidOperationException("Please choose from what is available!");
-        } while (true);
+        }
     }
 
-    private void DrawMenu(Exception error)
+    private void DrawMenu(Exception? error)
     {
-        if(CLEAR_CONSSOLE)
+        if(ClearConssole)
         {
             Console.Clear();
         }
@@ -96,7 +93,7 @@ public class Menu
         Console.WriteLine(_menuDivider);
         if(error != null)
         {
-            Console.WriteLine("ERROR: " + error.Message);
+            Console.WriteLine("ERROR: " + error);
             Console.WriteLine(_menuDivider);
         }
         foreach (var t in MenuItems)
@@ -113,8 +110,10 @@ public class Menu
         return this;
     }
 
-    public void RunUntilReturnOrExit()
+    public void RunUntilExit()
     {
-        while(!Run().isExit());
+        while(!Run().IsExit())
+        {
+        }
     }
 }

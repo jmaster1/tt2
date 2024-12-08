@@ -1,28 +1,40 @@
 ﻿
 using DAL;
 using GameBrain;
+using MenuSystem;
 using static MenuSystem.MenuBuilder;
 
-namespace Console_App
+namespace Console_App;
+
+internal class ConfigController(IConfigRepository configRepository) : AbstractController
 {
-    internal class ConfigController
+    private GameConfiguration _configuration = new();
+
+    internal GameConfiguration SelectConfig()
     {
-        private readonly IConfigRepository configRepository;
+        string? chosenName = null;
+        var items = configRepository.GetConfigurationNames()
+            .Select((name, index) => MenuItem(index++.ToString(), name, () => chosenName = name))
+            .ToArray();
+        new Menu("Tic-Tac-Two - choose configuration", [.. items])
+            .Run();
+        return chosenName == null ? default : configRepository.GetConfigurationByName(chosenName);
+    }
 
-        public ConfigController(IConfigRepository configRepository)
-        {
-            this.configRepository = configRepository;
-        }
+    public void Run()
+    {
+        Menu(Header,
+                MenuItem("+", "Create config", CreateConfig)
+            )
+            .BeforeDraw(() =>
+            {
+                //1Console.WriteLine(JsonStringSerializer.ToString(_configuration));
+            })
+            .RunUntilExit();
+    }
 
-        internal GameConfiguration SelectConfig()
-        {
-            string? chosenName = null;
-            subMenu("Tic-Tac-Two - choose configuration",
-                configRepository.GetConfigurationNames()
-                    .Select((name, index) => menuItem(index++.ToString(), name, () => chosenName = name))
-                    .ToArray())
-            .RunUntilReturnOrExit();
-            return chosenName == null ? default : configRepository.GetConfigurationByName(chosenName);
-        }
+    private void CreateConfig()
+    {
+        new ConfigEditController(configRepository, new GameConfiguration()).Run();
     }
 }

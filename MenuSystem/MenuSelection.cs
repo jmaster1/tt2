@@ -1,20 +1,25 @@
 ﻿namespace MenuSystem;
 
-
-public class MenuSelection
+public class MenuSelection(MenuItem item, string input)
 {
-    public readonly MenuItem item;
+    public readonly MenuItem Item = item;
 
-    public readonly string input;
+    public readonly string Input = input;
+    
+    private readonly string[] _tokens = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-    public MenuSelection(MenuItem item, string input)
+    public bool IsExit()
     {
-        this.item = item;
-        this.input = input;
+        return Item.Shortcut.Equals(Menu.ShortcutExit);
     }
 
-    public bool isExit()
+    public int GetInt(int i)
     {
-        return item.Shortcut.Equals(Menu.SHORTCUT_EXIT);
+        return int.Parse(_tokens[i]);
+    }
+
+    public string GetString(int i)
+    {
+        return _tokens[i];
     }
 }
