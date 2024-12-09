@@ -4,7 +4,6 @@ namespace DAL;
 
 public class ConfigRepositoryJson : AbstractRepositoryJson<GameConfiguration>, IConfigRepository
 {
-
     public List<string> GetConfigurationNames()
     {
         CheckAndCreateInitialConfig();
@@ -20,25 +19,21 @@ public class ConfigRepositoryJson : AbstractRepositoryJson<GameConfiguration>, I
     {
         Save(gameConfig, gameConfig.Name);
     }
-
-
+    
     private void CheckAndCreateInitialConfig()
     {
-        List<string> names = ListNames();
-        if (names.Count == 0)
+        var names = ListNames();
+        if (names.Count != 0) return;
+        var hardcodedRepo = new ConfigRepositoryPredefined();
+        var configurationNames = hardcodedRepo.GetConfigurationNames();
+        foreach (var gameConfig in configurationNames.Select(name => hardcodedRepo.GetConfigurationByName(name)))
         {
-            var hardcodedRepo = new ConfigRepositoryPredefined();
-            var configurationNames = hardcodedRepo.GetConfigurationNames();
-            foreach (var name in configurationNames)
-            {
-                var gameConfig = hardcodedRepo.GetConfigurationByName(name);
-                SaveConfiguration(gameConfig);
-            }
+            SaveConfiguration(gameConfig);
         }
     }
 
     protected override string GetExtension()
-    {
+    { 
         return ".config.json";
     }
 }

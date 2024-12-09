@@ -1,4 +1,6 @@
-﻿namespace ConsoleUI;
+﻿using System.Text;
+
+namespace ConsoleUI;
 using GameBrain;
 
 
@@ -6,8 +8,35 @@ public static class Visualizer
 {
     public static void DrawBoard(TicTacTwoBrain gameInstance)
     {
-        for (var y = 0; y < gameInstance.DimY; y++)
+        string singleFrame = 
+            "┌─┬─┐" +
+            "│ │ │" +
+            "├─┼─┤" +
+            "│ │ │" +
+            "└─┴─┘";
+        
+        string doubleFrame = 
+            "┌─╥─┐" +
+            "│ ║ │" +
+            "╞═╬═╡" +
+            "│ ║ │" +
+            "└─╨─┘";
+        
+        var sb = new StringBuilder();
+        var w = gameInstance.DimX;
+        var h = gameInstance.DimX;
+        for (var y = 0; y < h; y++)
         {
+            if (y == 0)
+            {
+                var sb0 = new StringBuilder().Append('┌');
+                var sb1 = new StringBuilder();
+                for (var x = 0; x < w; x++)
+                {
+                    sb0.Append('╥');
+                    Console.Write(x+1);
+                }
+            }
             for (var x = 0; x < gameInstance.DimX; x++)
             {
                 Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x, y]) + " ");
