@@ -1,4 +1,6 @@
-﻿namespace GameBrain;
+﻿using System.Drawing;
+
+namespace GameBrain;
 
 public class TicTacTwoBrain
 {
@@ -6,6 +8,8 @@ public class TicTacTwoBrain
     public EGamePiece NextMove { get; private set; } = EGamePiece.X;
 
     private GameConfiguration _gameConfiguration;
+
+    private Rectangle gridRect = new Rectangle(1, 1, 3, 3);
 
     public TicTacTwoBrain(GameConfiguration gameConfiguration)
     {
@@ -53,5 +57,10 @@ public class TicTacTwoBrain
     {
         _gameBoard = new EGamePiece[_gameBoard.GetLength(0),_gameBoard.GetLength(1)];
         NextMove = EGamePiece.X;
+    }
+
+    public bool IsGridCell(int x, int y)
+    {
+        return gridRect.Contains(x, y);
     }
 }

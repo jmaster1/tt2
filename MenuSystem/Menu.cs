@@ -88,7 +88,17 @@ public class Menu
         {
             Console.Clear();
         }
-        beforeDraw?.Invoke();
+
+        try
+        {
+            beforeDraw?.Invoke();
+        }
+        catch (Exception any)
+        {
+            Console.WriteLine("DRAW ERROR: " + any);
+            Console.WriteLine(_menuDivider);
+        }
+        
         Console.WriteLine(MenuHeader);
         Console.WriteLine(_menuDivider);
         if(error != null)
