@@ -6,27 +6,24 @@ using GameBrain;
 
 public class Visualizer(TicTacTwoBrain gameInstance)
 {
-    private static readonly string[] Frame =
+    private static readonly char[] IndexHeaders = "123456789ABCDEFGHIJKLMNOPQESTUVWXYZ".ToCharArray();
+    
+    public static char Index2Title(int xy) => IndexHeaders[xy];
+
+    public static int Title2Index(char t) =>  Array.IndexOf(IndexHeaders, t);
+        
+    private static readonly string[] Template =
     [
         "    X   X  ",
         "  ┌───┬───┐",
-        "Y │ ? │ ? │",
+        "Y │:?:│:?:│",
         "  ├───┼───┤",
-        "Y │ ? │ ? │",
+        "Y │:?:│:?:│",
         "  └───┴───┘"
     ];
     
-    static readonly string[] GridFrame =
-    [
-        "    X   X  ",
-        "  ╔═══╦═══╗",
-        "Y ║ ? ║ ? ║",
-        "  ╠═══╬═══╣",
-        "Y ║ ? ║ ? ║",
-        "  ╚═══╩═══╝"
-    ];
-    
     private const char PlaceholderPiece = '?';
+    private const char PlaceholderGrid = ':';
     private const char PlaceholderRow = 'Y';
     private const char PlaceholderCol = 'X';
 
@@ -35,10 +32,10 @@ public class Visualizer(TicTacTwoBrain gameInstance)
     private const int CellWidth = 4;
     private const int CellHeight = 2;
 
-    private int W => gameInstance.DimX;
-    private int H => gameInstance.DimY;
+    private int W => gameInstance.Width;
+    private int H => gameInstance.Height;
 
-    readonly StringBuilder _sb = new();
+    private readonly StringBuilder _sb = new();
 
     public string Render()
     {
@@ -82,7 +79,7 @@ public class Visualizer(TicTacTwoBrain gameInstance)
     private void RenderRowLineCell(int y, int l, int x)
     {
         var firstCol = x == 0;
-        var source = gameInstance.IsGridCell(x, y) ? GridFrame[l] : Frame[l];
+        var source = /*gameInstance.IsGridCell(x, y) ? GridFrame[l] : */Template[l];
         if (firstCol)
         {
             RenderRowLineCellChars(x, y, source, 0, CellOffsetX);
@@ -109,8 +106,8 @@ public class Visualizer(TicTacTwoBrain gameInstance)
         var c = source[charPos];
         c = c switch
         {
-            //PlaceholderPiece => PieceToChar(gameInstance.GameBoard[x, y]),
-            PlaceholderPiece => gameInstance.IsGridCell(x, y) ? '+' : ' ',
+            PlaceholderPiece => PieceToChar(gameInstance.GameBoard[x, y]),
+            PlaceholderGrid => gameInstance.IsGridCell(x, y) ? PlaceholderGrid : ' ',
             PlaceholderCol => Index2Title(x),
             PlaceholderRow => Index2Title(y),
             _ => c
@@ -127,7 +124,8 @@ public class Visualizer(TicTacTwoBrain gameInstance)
             _ => throw new ArgumentOutOfRangeException(nameof(eGamePiece), eGamePiece, null)
         };
 
-    private static char Index2Title(int xy) => (char) ('1' + xy);
-
-    public static int Title2Index(char t) => t - '1';
+    public void RenderToConsole()
+    {
+        Console.WriteLine(Render());
+    }
 }

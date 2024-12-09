@@ -2,5 +2,5 @@
 
 internal class AbstractController
 {
-    internal string Header => "Tic-Tac-Two:" + GetType().Name.Replace("Controller", "");
+    internal string Header => "Tic-Tac-Two :: " + GetType().Name.Replace("Controller", "");
 }

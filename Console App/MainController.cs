@@ -10,35 +10,41 @@ internal class MainController(IConfigRepository configRepository, ConfigControll
     public void Run()
     {
         Menu(Header,
-            MenuItem("N", "New game", NewGameSelectConfig),
-            MenuItem("D", "New default game", NewGameDefaultConfig),
-            MenuItem("A", "Add configuration", new ConfigEditController(
-                configRepository, new GameConfiguration()).Run),
-            MenuItem("E", "Edit configuration", () =>
-            {
-                var config = configController.SelectConfig();
-                if (config != default)
-                {
-                    new ConfigEditController(configRepository, config).Run();
-                }
-            })
+            MenuItem("N", "New game (select config)", OmNewGameSelectConfig),
+            MenuItem("D", "New game (default config)", OnNewGameDefaultConfig),
+            MenuItem("A", "Add configuration", OnAddConfiguration),
+            MenuItem("E", "Edit configuration", OnEditConfiguration)
         ).RunUntilExit();
     }
 
-    void NewGame(GameConfiguration config)
+    private void OnEditConfiguration()
+    {
+        var config = configController.SelectConfig();
+        if (config != default)
+        {
+            new ConfigEditController(configRepository, config).Run();
+        }
+    }
+
+    private void OnAddConfiguration()
+    {
+        new ConfigEditController(configRepository, new GameConfiguration()).Run();
+    }
+
+    private static void NewGame(GameConfiguration config)
     {
         var gameInstance = new TicTacTwoBrain(config);
         var gameController = new GameController(gameInstance);
         gameController.GameLoop();
     }
 
-    void NewGameSelectConfig()
+    private void OmNewGameSelectConfig()
     {
-        GameConfiguration config = configController.SelectConfig();
+        var config = configController.SelectConfig();
         NewGame(config);
     }
 
-    void NewGameDefaultConfig()
+    private void OnNewGameDefaultConfig()
     {
         NewGame(configRepository.GetConfigurationByName(
             configRepository.GetConfigurationNames()[0]));
