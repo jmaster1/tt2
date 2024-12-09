@@ -1,4 +1,5 @@
 ﻿using ConsoleUI;
+using DAL;
 using GameBrain;
 using MenuSystem;
 using static MenuSystem.MenuBuilder;
@@ -14,10 +15,17 @@ internal class GameController(TicTacTwoBrain brain) : AbstractController
         Menu(Header,
             MenuItem("P <x> <y>", "Put piece at specified cell", OnPutPiece),
             MenuItem("M <fromX> <fromY> <toX> <toY>", "Move piece to another cell", OnMovePiece),
-            MenuItem("G <x> <y>", "Move grid to specified cell", OnMoveGrid)
+            MenuItem("G <x> <y>", "Move grid to specified cell", OnMoveGrid),
+            MenuItem("D", "Dump game state", OnDump)
         )
         .BeforeDraw(Render)
         .RunUntilExit();
+    }
+
+    private void OnDump()
+    {
+        var json = JsonStringSerializer.ToString(brain);
+        Console.WriteLine(json);
     }
 
     private void Render()

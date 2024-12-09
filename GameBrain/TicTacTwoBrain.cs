@@ -88,10 +88,23 @@ public class TicTacTwoBrain
 
     private void SwapPlayer()
     {
+        CheckWin(NextMove);
         CurrentPlayer.MovesMade++;
         NextMove = NextMove == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
     }
-    
+
+    private void CheckWin(EGamePiece piece)
+    {
+        int[] dxs = [1];
+        int[] dys = [0];
+        for (int i = 0; i < dxs.Length; i++)
+        {
+            var dx = dxs[i];
+            var dy = dys[i];
+            
+        }
+    }
+
     private bool IsPieceAt(int x, int y, EGamePiece piece)
     {
         return _gameBoard[x, y] == piece;
