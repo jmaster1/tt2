@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 builder.Services.AddScoped<IConfigRepository, ConfigRepositoryJson>();
+builder.Services.AddScoped<IGameRepository, GameRepositoryJson>();
 
 var app = builder.Build();
 
