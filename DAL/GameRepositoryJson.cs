@@ -20,4 +20,14 @@ public class GameRepositoryJson : AbstractRepositoryJson<GameSnapshot>, IGameRep
     {
         Save(snapshot, LastSnapshotName);
     }
+
+    public GameSnapshot? Load(string name)
+    {
+        return LoadByName(name);
+    }
+
+    public void Save(GameSnapshot snapshot)
+    {
+        Save(snapshot, snapshot.Name);
+    }
 }

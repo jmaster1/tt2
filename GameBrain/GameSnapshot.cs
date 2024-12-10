@@ -2,6 +2,7 @@ namespace GameBrain;
 
 public class GameSnapshot
 {
+    public string Name { get; set; } = default!;
     public GameConfiguration Configuration { get; set; }
     public int GridX { get; set; }
     public int GridY { get; set; }
