@@ -4,24 +4,36 @@ using static MenuSystem.MenuBuilder;
 
 namespace Console_App;
 
-internal class MainController(IConfigRepository configRepository, ConfigController configController)
+internal class MainController(
+    IConfigRepository configRepository, 
+    IGameRepository gameRepository)
     : AbstractController
 {
     private readonly TicTacTwoBrain _gameInstance = new();
+
+    private readonly ConfigController _configController = new(configRepository);
     
     public void Run()
     {
         Menu(Header,
             MenuItem("N", "New game (select config)", OmNewGameSelectConfig),
             MenuItem("D", "New game (default config)", OnNewGameDefaultConfig),
+            MenuItem("L", "Load last saved game", OnLoadGame),
             MenuItem("A", "Add configuration", OnAddConfiguration),
-            MenuItem("E", "Edit configuration", OnEditConfiguration)
+            MenuItem("C", "Edit configuration", OnEditConfiguration)
         ).RunUntilExit();
+    }
+
+    private void OnLoadGame()
+    {
+        var snapshot = gameRepository.LoadLastSnapshot();
+        _gameInstance.LoadSnapshot(snapshot);
+        new GameController(_gameInstance, gameRepository).GameLoop();
     }
 
     private void OnEditConfiguration()
     {
-        var config = configController.SelectConfig();
+        var config = _configController.SelectConfig();
         if (config != default)
         {
             new ConfigEditController(configRepository, config).Run();
@@ -36,13 +48,13 @@ internal class MainController(IConfigRepository configRepository, ConfigControll
     private void NewGame(GameConfiguration config)
     {
         _gameInstance.LoadConfig(config);
-        var gameController = new GameController(_gameInstance);
+        var gameController = new GameController(_gameInstance, gameRepository);
         gameController.GameLoop();
     }
 
     private void OmNewGameSelectConfig()
     {
-        var config = configController.SelectConfig();
+        var config = _configController.SelectConfig();
         NewGame(config);
     }
 

@@ -6,7 +6,8 @@ using static MenuSystem.MenuBuilder;
 
 namespace Console_App;
 
-internal class GameController(TicTacTwoBrain brain) : AbstractController
+internal class GameController(TicTacTwoBrain brain, IGameRepository gameRepository) : 
+    AbstractController
 {
     private readonly Visualizer _visualizer = new(brain);
     
@@ -16,13 +17,29 @@ internal class GameController(TicTacTwoBrain brain) : AbstractController
             MenuItem("P <x> <y>", "Put piece at specified cell", OnPutPiece),
             MenuItem("M <fromX> <fromY> <toX> <toY>", "Move piece to another cell", OnMovePiece),
             MenuItem("G <x> <y>", "Move grid to specified cell", OnMoveGrid),
-            MenuItem("D", "Dump game state", OnDump)
+            MenuItem("D", "Dump game", OnDumpGame),
+            MenuItem("S", "Save game", OnSaveGame),
+            MenuItem("L", "Load last saved game", OnLoadGame)
         )
         .BeforeDraw(Render)
         .RunUntilExit();
     }
 
-    private void OnDump(MenuSelection input)
+    private void OnLoadGame(MenuSelection input)
+    {
+        var snapshot = gameRepository.LoadLastSnapshot();
+        brain.LoadSnapshot(snapshot);
+        input.AddMessage("Game snapshot loaded");
+    }
+
+    private void OnSaveGame(MenuSelection input)
+    {
+        gameRepository.SaveLastSnapshot(brain.CreateSnapshot());
+        input.AddMessage("Game snapshot saved");
+        
+    }
+
+    private void OnDumpGame(MenuSelection input)
     {
         var json = JsonStringSerializer.ToString(brain.CreateSnapshot());
         input.AddMessage(json);

@@ -23,7 +23,7 @@ public abstract class AbstractRepositoryJson<T>
             .ToList();
     }
 
-    protected T? GetByName(string name)
+    protected T? LoadByName(string name)
     {
         CheckAndCreateBasePath();
         var jsonStr = File.ReadAllText(_basePath + name + GetExtension());

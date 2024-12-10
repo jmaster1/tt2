@@ -12,7 +12,7 @@ public class ConfigRepositoryJson : AbstractRepositoryJson<GameConfiguration>, I
 
     public GameConfiguration GetConfigurationByName(string name)
     {
-        return GetByName(name);
+        return LoadByName(name);
     }
 
     public void SaveConfiguration(GameConfiguration gameConfig)
