@@ -15,7 +15,7 @@ internal class ConfigEditController(IConfigRepository configRepository, GameConf
             MenuItem("G <width> <height>", () => $"Grid size ({config.GridWidth} x {config.GridHeight})", OnUpdateGridSize),
             MenuItem("G <x> <y>", () => $"Grid initial position ({config.GridX} x {config.GridY})", OnUpdateGridPos),
             MenuItem("P <n>", () => $"Piece count for each player ({config.PlayerPieceCount})", OnUpdatePlayerPieceCount),
-            MenuItem("M <n>", () => $"Number of moves to make before move pieces or grid available  ({config.MovePieceAfterNMoves})", OnUpdateMovePieceAfterNMoves),
+            MenuItem("M <n>", () => $"Number of moves to make before move pieces or grid available ({config.MovePieceAfterNMoves})", OnUpdateMovePieceAfterNMoves),
             MenuItem("W <n>", () => $"Number of pieces in a row for a win ({config.WinSequence})", OnUpdateWinSequence),
             MenuItem("S", "Save", OnSave)
         )

@@ -28,6 +28,7 @@ internal class GameController(TicTacTwoBrain brain, IGameRepository gameReposito
     private void OnLoadGame(MenuSelection input)
     {
         var snapshot = gameRepository.LoadLastSnapshot();
+        if(snapshot == null) return;
         brain.LoadSnapshot(snapshot);
         input.AddMessage("Game snapshot loaded");
     }

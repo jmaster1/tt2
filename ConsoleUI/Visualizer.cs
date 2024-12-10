@@ -79,7 +79,7 @@ public class Visualizer(TicTacTwoBrain gameInstance)
     private void RenderRowLineCell(int y, int l, int x)
     {
         var firstCol = x == 0;
-        var source = /*gameInstance.IsGridCell(x, y) ? GridFrame[l] : */Template[l];
+        var source = Template[l];
         if (firstCol)
         {
             RenderRowLineCellChars(x, y, source, 0, CellOffsetX);

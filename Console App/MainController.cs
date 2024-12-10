@@ -16,7 +16,7 @@ internal class MainController(
     public void Run()
     {
         Menu(Header,
-            MenuItem("N", "New game (select config)", OmNewGameSelectConfig),
+            MenuItem("N", "New game (select config)", OnNewGameSelectConfig),
             MenuItem("D", "New game (default config)", OnNewGameDefaultConfig),
             MenuItem("L", "Load last saved game", OnLoadGame),
             MenuItem("A", "Add configuration", OnAddConfiguration),
@@ -27,6 +27,7 @@ internal class MainController(
     private void OnLoadGame()
     {
         var snapshot = gameRepository.LoadLastSnapshot();
+        if (snapshot == null) return;
         _gameInstance.LoadSnapshot(snapshot);
         new GameController(_gameInstance, gameRepository).GameLoop();
     }
@@ -49,7 +50,7 @@ internal class MainController(
         gameController.GameLoop();
     }
 
-    private void OmNewGameSelectConfig()
+    private void OnNewGameSelectConfig()
     {
         _configSelectController.SelectConfig(NewGame);
     }

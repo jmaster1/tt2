@@ -24,7 +24,7 @@ public record struct GameConfiguration()
     
     public int MovePieceAfterNMoves { get; set; } = 2;
 
-    public void Validate()
+    public readonly void Validate()
     {
         var errors = new StringBuilder();
         if (Name == null || Name.Trim().Length == 0)

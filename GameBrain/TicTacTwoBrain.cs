@@ -151,7 +151,7 @@ public class TicTacTwoBrain
         return x >= 0 && y >= 0 && x < Width && y < Height;
     }
 
-    public bool IsEmpty(int x, int y)
+    private bool IsEmpty(int x, int y)
     {
         return IsPieceAt(x, y, EGamePiece.Empty);
     }
@@ -162,18 +162,12 @@ public class TicTacTwoBrain
                PlayerO.MovesMade >= _gameConfiguration.MovePieceAfterNMoves;
     }
 
-    private void Validate(bool condition, string error)
+    private static void Validate(bool condition, string error)
     {
         if (!condition)
         {
             throw new ValidationException(error);
         }
-    }
-
-    public void Reset()
-    {
-        _gameBoard = new EGamePiece[_gameBoard.GetLength(0),_gameBoard.GetLength(1)];
-        NextMove = EGamePiece.X;
     }
 
     public bool IsGridCell(int x, int y)
