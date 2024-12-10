@@ -12,6 +12,8 @@ public class TicTacTwoBrain
     public int Height => _gameBoard.GetLength(1);
     
     public EGamePiece NextMove { get; private set; } = EGamePiece.X;
+    
+    public EGamePiece Winner { get; private set; } = EGamePiece.Empty;
 
     private GameConfiguration _gameConfiguration;
 
@@ -21,10 +23,20 @@ public class TicTacTwoBrain
     
     public readonly PlayerState PlayerO = new(EGamePiece.O);
 
-    public PlayerState CurrentPlayer => NextMove == EGamePiece.X ? PlayerX : PlayerO;
+    public PlayerState CurrentPlayer => (NextMove switch
+    {
+        EGamePiece.X => PlayerX,
+        EGamePiece.O => PlayerO,
+        _ => null
+    })!;
+
+    public int WinSequence => _gameConfiguration.WinSequence;
+    
+    public int MovePieceAfterNMoves => _gameConfiguration.MovePieceAfterNMoves;
 
     public void PutPiece(int x, int y)
     {
+        ValidateCanMove();
         validate(CurrentPlayer.PiecesLeft > 0, "Current player have no pieces left");
         validate(IsGridCell(x, y), "Invalid position");
         validate(IsEmpty(x, y), "Cell is not empty");
@@ -37,6 +49,7 @@ public class TicTacTwoBrain
 
     public void MovePiece(int fromX, int fromY, int toX, int toY)
     {
+        ValidateCanMove();
         validate(CanMovePieceOrGrid(), "Can not move piece at this moment");
         validate(IsGridCell(fromX, fromY), "Invalid source position");
         validate(IsGridCell(toX, toY), "Invalid destination position");
@@ -52,6 +65,7 @@ public class TicTacTwoBrain
 
     public void MoveGridTo(int x, int y)
     {
+        ValidateCanMove();
         validate(CanMovePieceOrGrid(), "Can not move grid at this moment");
         validate(IsValidPos(x, y) &&
             IsValidPos(x + _gridRect.Width - 1, y + _gridRect.Height - 1), "Invalid position");
@@ -63,21 +77,69 @@ public class TicTacTwoBrain
 
     private void SwapPlayer()
     {
-        CheckWin(NextMove);
         CurrentPlayer.MovesMade++;
-        NextMove = NextMove == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        var opponent = NextMove == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+        if (CheckWin(NextMove))
+        {
+            Winner = NextMove;
+        }
+        else if (CheckWin(opponent))
+        {
+            Winner = opponent;
+        }
+        NextMove = Winner == EGamePiece.Empty ? opponent : EGamePiece.Empty;
     }
 
-    private void CheckWin(EGamePiece piece)
+    private bool CheckWin(EGamePiece piece)
     {
-        int[] dxs = [1];
-        int[] dys = [0];
-        for (int i = 0; i < dxs.Length; i++)
+        var ret = false;
+        for (var y = _gridRect.Top; y < _gridRect.Bottom && !ret; y++)
         {
-            var dx = dxs[i];
-            var dy = dys[i];
-            
+            ret = CheckWin(piece, _gridRect.Left, y, 1, 0);
         }
+        for (var x = _gridRect.Left; x < _gridRect.Right && !ret; x++)
+        {
+            ret = CheckWin(piece, x, _gridRect.Top, 0, 1);
+        }
+        for (var d = -_gridRect.Height + 1; d < _gridRect.Width && !ret; d++)
+        {
+            var x = _gridRect.Left + Math.Max(d, 0);
+            var y = _gridRect.Top + Math.Max(-d, 0);
+            ret = CheckWin(piece, x, y, 1, 1);
+        }
+        for (var d = -_gridRect.Width + 1; d < _gridRect.Height && !ret; d++)
+        {
+            var x = _gridRect.Left + Math.Max(-d, 0);
+            var y = _gridRect.Top + Math.Max(d, 0);
+            ret = CheckWin(piece, x, y, 1, -1);
+        }
+        return ret;
+    }
+
+    private bool CheckWin(EGamePiece piece, int x0, int y0, int dx, int dy)
+    {
+        var sequence = 0;
+        for (int x = x0, y = y0; _gridRect.Contains(x, y); x += dx, y += dy)
+        {
+            if (GetPieceAt(x, y) == piece)
+            {
+                if (++sequence == WinSequence)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                sequence = 0;
+            }
+        }
+
+        return false;
+    }
+    
+    private void ValidateCanMove()
+    {
+        validate(NextMove != EGamePiece.Empty, "Game is finished, can't move");
     }
 
     private bool IsPieceAt(int x, int y, EGamePiece piece)
@@ -135,6 +197,7 @@ public class TicTacTwoBrain
         _gridRect.Height = _gameConfiguration.GridHeight;
         PlayerX.PiecesLeft = PlayerO.PiecesLeft = _gameConfiguration.PlayerPieceCount;
         PlayerX.MovesMade = PlayerO.MovesMade = 0;
+        Winner = EGamePiece.Empty;
     }
     
     public GameSnapshot CreateSnapshot()
@@ -150,6 +213,7 @@ public class TicTacTwoBrain
             PlayerX = PlayerX.CreateSnapshot(),
             PlayerO = PlayerO.CreateSnapshot(),
             NextMove = NextMove,
+            Winner = Winner,
             GridX = _gridRect.X,
             GridY = _gridRect.Y,
             Pieces = pieces.ToList()
@@ -163,6 +227,7 @@ public class TicTacTwoBrain
         _gridRect.X = snapshot.GridX;
         _gridRect.Y = snapshot.GridY;
         NextMove = snapshot.NextMove;
+        Winner = snapshot.Winner;
         PlayerX.LoadSnapshot(snapshot.PlayerX);
         PlayerO.LoadSnapshot(snapshot.PlayerO);
         snapshot.Pieces?.ForEach(pieceSnapshot =>

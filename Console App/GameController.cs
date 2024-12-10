@@ -50,7 +50,12 @@ internal class GameController(TicTacTwoBrain brain, IGameRepository gameReposito
         _visualizer.RenderToConsole();
         RenderPlayerState(brain.PlayerX);
         RenderPlayerState(brain.PlayerO);
-        Console.WriteLine("Current player: " + brain.NextMove);
+        Console.WriteLine($"Win sequence: {brain.WinSequence}, MovePieceAfterNMoves: {brain.MovePieceAfterNMoves}");
+        if (brain.Winner != EGamePiece.Empty)
+        {
+            Console.WriteLine($"Winner: {brain.Winner}");    
+        }
+        Console.WriteLine($"Current player: {brain.NextMove}");
     }
 
     private void RenderPlayerState(PlayerState player)

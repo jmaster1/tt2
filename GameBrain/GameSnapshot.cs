@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace GameBrain;
 
 public class GameSnapshot
@@ -11,4 +9,5 @@ public class GameSnapshot
     public PlayerSnapshot PlayerO { get; set; } = null!;
     public List<PieceSnapshot>? Pieces { get; set; }
     public EGamePiece NextMove { get; set; }
+    public EGamePiece Winner { get; set; } = EGamePiece.Empty;
 }
