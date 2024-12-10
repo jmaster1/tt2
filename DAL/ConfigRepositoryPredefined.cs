@@ -6,11 +6,11 @@ public class ConfigRepositoryPredefined : IConfigRepository
 {
     private readonly List<GameConfiguration> _gameConfigurations =
     [
-        new GameConfiguration()
+        new()
         {
             Name = "Classical"
         },
-        new GameConfiguration()
+        new()
         {
             Name = "Big board",
             BoardWidth = 10,
@@ -20,7 +20,8 @@ public class ConfigRepositoryPredefined : IConfigRepository
             GridX = 3,
             GridY = 3,
             WinSequence = 4,
-            MovePieceAfterNMoves = 4
+            MovePieceAfterNMoves = 4,
+            PlayerPieceCount = 16
         },
     ];
 

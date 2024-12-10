@@ -37,8 +37,7 @@ public abstract class AbstractRepositoryJson<T>
         var jsonStr = JsonStringSerializer.ToString(entity);
         File.WriteAllText(_basePath + name + GetExtension(), jsonStr);
     }
-
-
+    
     private void CheckAndCreateBasePath()
     {
         if (!Directory.Exists(_basePath))

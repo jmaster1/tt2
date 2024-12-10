@@ -2,17 +2,13 @@
 
 public class MenuSelection(MenuItem item, string input, Action<string> messageConsumer)
 {
-    public readonly MenuItem Item = item;
-
-    public readonly string Input = input;
-    
     private readonly string[] _tokens = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-    private readonly Action<string> _messageConsumer = messageConsumer;
     
+    public MenuItem Item => item;
+
     public bool IsExit()
     {
-        return Item.Shortcut.Equals(Menu.ShortcutExit);
+        return item.Shortcut.Equals(Menu.ShortcutExit);
     }
     
     public string GetString(int i)

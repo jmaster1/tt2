@@ -37,10 +37,10 @@ public class TicTacTwoBrain
     public void PutPiece(int x, int y)
     {
         ValidateCanMove();
-        validate(CurrentPlayer.PiecesLeft > 0, "Current player have no pieces left");
-        validate(IsGridCell(x, y), "Invalid position");
-        validate(IsEmpty(x, y), "Cell is not empty");
-        validate(IsGridCell(x, y), "Piece should be placed inside grid");
+        Validate(CurrentPlayer.PiecesLeft > 0, "Current player have no pieces left");
+        Validate(IsGridCell(x, y), "Invalid position");
+        Validate(IsEmpty(x, y), "Cell is not empty");
+        Validate(IsGridCell(x, y), "Piece should be placed inside grid");
         
         _gameBoard[x, y] = NextMove;
         CurrentPlayer.PiecesLeft--;
@@ -50,13 +50,13 @@ public class TicTacTwoBrain
     public void MovePiece(int fromX, int fromY, int toX, int toY)
     {
         ValidateCanMove();
-        validate(CanMovePieceOrGrid(), "Can not move piece at this moment");
-        validate(IsGridCell(fromX, fromY), "Invalid source position");
-        validate(IsGridCell(toX, toY), "Invalid destination position");
-        validate(IsPieceAt(fromX, fromY, NextMove), "Invalid piece at source position");
-        validate(IsEmpty(toX, toY), "Destination position is not empty");
+        Validate(CanMovePieceOrGrid(), "Can not move piece at this moment");
+        Validate(IsGridCell(fromX, fromY), "Invalid source position");
+        Validate(IsGridCell(toX, toY), "Invalid destination position");
+        Validate(IsPieceAt(fromX, fromY, NextMove), "Invalid piece at source position");
+        Validate(IsEmpty(toX, toY), "Destination position is not empty");
         var piece = _gameBoard[fromX, fromY];
-        validate(piece == NextMove, "Source position have no piece of current player: " + NextMove);
+        Validate(piece == NextMove, "Source position have no piece of current player: " + NextMove);
         
         _gameBoard[toX, toY] = piece; 
         _gameBoard[fromX, fromY] = EGamePiece.Empty;
@@ -66,8 +66,8 @@ public class TicTacTwoBrain
     public void MoveGridTo(int x, int y)
     {
         ValidateCanMove();
-        validate(CanMovePieceOrGrid(), "Can not move grid at this moment");
-        validate(IsValidPos(x, y) &&
+        Validate(CanMovePieceOrGrid(), "Can not move grid at this moment");
+        Validate(IsValidPos(x, y) &&
             IsValidPos(x + _gridRect.Width - 1, y + _gridRect.Height - 1), "Invalid position");
         
         _gridRect.X = x;
@@ -133,13 +133,12 @@ public class TicTacTwoBrain
                 sequence = 0;
             }
         }
-
         return false;
     }
     
     private void ValidateCanMove()
     {
-        validate(NextMove != EGamePiece.Empty, "Game is finished, can't move");
+        Validate(NextMove != EGamePiece.Empty, "Game is finished, can't move");
     }
 
     private bool IsPieceAt(int x, int y, EGamePiece piece)
@@ -163,7 +162,7 @@ public class TicTacTwoBrain
                PlayerO.MovesMade >= _gameConfiguration.MovePieceAfterNMoves;
     }
 
-    private void validate(bool condition, string error)
+    private void Validate(bool condition, string error)
     {
         if (!condition)
         {

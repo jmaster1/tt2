@@ -15,19 +15,13 @@ public class MenuItem
     public string Title
     {
         get => _titleFunc == null ? _title : _titleFunc.Invoke();
-        set
-        {
-            _title = value;
-        }
+        set => _title = value;
     }
     
     public Func<string>? TitleFunc
     {
         get => _titleFunc;
-        set
-        {
-            _titleFunc = value;
-        }
+        set => _titleFunc = value;
     }
 
     public string Shortcut

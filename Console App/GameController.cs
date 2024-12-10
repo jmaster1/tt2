@@ -36,7 +36,6 @@ internal class GameController(TicTacTwoBrain brain, IGameRepository gameReposito
     {
         gameRepository.SaveLastSnapshot(brain.CreateSnapshot());
         input.AddMessage("Game snapshot saved");
-        
     }
 
     private void OnDumpGame(MenuSelection input)

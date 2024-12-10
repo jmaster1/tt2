@@ -20,6 +20,4 @@ public class GameRepositoryJson : AbstractRepositoryJson<GameSnapshot>, IGameRep
     {
         Save(snapshot, LastSnapshotName);
     }
-
-    
 }

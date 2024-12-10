@@ -10,7 +10,7 @@ internal class ConfigEditController(IConfigRepository configRepository, GameConf
     public void Run()
     {
         Menu(Header,
-                MenuItem("N <name>", () => $"Name ({config.Name})", OnUpdateName),
+            MenuItem("N <name>", () => $"Name ({config.Name})", OnUpdateName),
             MenuItem("B <width> <height>", () => $"Board size ({config.BoardWidth} x {config.BoardHeight})", OnUpdateBoardSize),
             MenuItem("G <width> <height>", () => $"Grid size ({config.GridWidth} x {config.GridHeight})", OnUpdateGridSize),
             MenuItem("G <x> <y>", () => $"Grid initial position ({config.GridX} x {config.GridY})", OnUpdateGridPos),
@@ -22,10 +22,11 @@ internal class ConfigEditController(IConfigRepository configRepository, GameConf
         .RunUntilExit();
     }
 
-    private void OnSave()
+    private void OnSave(MenuSelection input)
     {
         config.Validate();
         configRepository.SaveConfiguration(config);
+        input.AddMessage("Configuration saved");
     }
 
     private void OnUpdateName(MenuSelection input)

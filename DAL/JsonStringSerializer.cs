@@ -4,7 +4,7 @@ namespace DAL;
 
 public static class JsonStringSerializer
 {
-    private static JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
     
     public static T? FromString<T>(string jsonStr)
     {
@@ -13,6 +13,6 @@ public static class JsonStringSerializer
 
     public static string ToString<T>(T entity)
     {
-        return JsonSerializer.Serialize(entity, _jsonOptions);
+        return JsonSerializer.Serialize(entity, JsonOptions);
     }
 }

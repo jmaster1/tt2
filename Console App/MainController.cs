@@ -11,7 +11,7 @@ internal class MainController(
 {
     private readonly TicTacTwoBrain _gameInstance = new();
 
-    private readonly ConfigController _configController = new(configRepository);
+    private readonly ConfigSelectController _configSelectController = new(configRepository);
     
     public void Run()
     {
@@ -33,11 +33,8 @@ internal class MainController(
 
     private void OnEditConfiguration()
     {
-        var config = _configController.SelectConfig();
-        if (config != default)
-        {
-            new ConfigEditController(configRepository, config).Run();
-        }
+        _configSelectController.SelectConfig(config => 
+            new ConfigEditController(configRepository, config).Run());
     }
 
     private void OnAddConfiguration()
@@ -54,8 +51,7 @@ internal class MainController(
 
     private void OmNewGameSelectConfig()
     {
-        var config = _configController.SelectConfig();
-        NewGame(config);
+        _configSelectController.SelectConfig(NewGame);
     }
 
     private void OnNewGameDefaultConfig()

@@ -4,15 +4,15 @@ public class Menu
 {
     public static bool ClearConssole = true;
 
-    public static readonly string ShortcutExit = "E";
+    public const string ShortcutExit = "E";
 
     private string MenuHeader { get; set; }
     
     private readonly string _menuDivider;
     
-    private List<MenuItem> MenuItems { get; set; }
+    private List<MenuItem> MenuItems { get; }
     
-    private readonly List<string> Messages = [];
+    private readonly List<string> _messages = [];
 
     private readonly MenuItem _menuItemExit = new()
     {
@@ -44,13 +44,11 @@ public class Menu
     public MenuSelection Run()
     {
         Exception? error = null;
-        MenuSelection? selection = null;
         while (true)
         {
             try
             {
-                DrawMenu(error, selection);
-                selection = null;
+                DrawMenu(error);
                 var choice = ProcessInput();
                 var menuItem = choice.Item;
                 menuItem.MenuItemAction?.Invoke();
@@ -82,14 +80,14 @@ public class Menu
                          StringComparison.CurrentCultureIgnoreCase)))
             {
                 return new MenuSelection(menuItem, 
-                    userInput.Substring(1).Trim(), 
-                    (message) => Messages.Add(message));
+                    userInput[1..].Trim(), 
+                    (message) => _messages.Add(message));
             }
             throw new InvalidOperationException("Please choose from what is available!");
         }
     }
 
-    private void DrawMenu(Exception? error, MenuSelection? selection)
+    private void DrawMenu(Exception? error)
     {
         if(ClearConssole)
         {
@@ -115,12 +113,12 @@ public class Menu
             Console.WriteLine(_menuDivider);
         }
         
-        Messages.ForEach(message =>
+        _messages.ForEach(message =>
         {
             Console.WriteLine("MESSAGE: " + message);
             Console.WriteLine(_menuDivider);
         });
-        Messages.Clear();
+        _messages.Clear();
         
         foreach (var t in MenuItems)
         {
