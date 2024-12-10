@@ -8,23 +8,24 @@ namespace Web2.Pages;
 public class IndexModel : PageModel
 {
     private readonly IConfigRepository _configRepository;
-    
-    private readonly ILogger<IndexModel> _logger;
 
-    //public SelectList ConfigSelectList { get; set; } = default!;
+    public SelectList ConfigSelectList { get; set; } = default!;
     
     [BindProperty]
     public int ConfigId { get; set; }
+
+    [BindProperty] public string GameId { get; set; } = null!;
     
-    public IndexModel(ILogger<IndexModel> logger, IConfigRepository configRepository)
+    public IndexModel(IConfigRepository configRepository)
     {
-        _logger = logger;
         _configRepository = configRepository;
     }
 
     public void OnGet()
     {
-        var selectListData = _configRepository.GetConfigurationNames();
-        var ConfigSelectList = new SelectList(selectListData, "id", "value");
+        var selectListData = _configRepository.GetConfigurationNames()
+            .Select(name => new {id = name, value = name})
+            .ToList();
+        ConfigSelectList = new SelectList(selectListData, "id", "value");
     }
 }
