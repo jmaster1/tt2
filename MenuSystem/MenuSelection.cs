@@ -1,6 +1,6 @@
 ﻿namespace MenuSystem;
 
-public class MenuSelection(MenuItem item, string input)
+public class MenuSelection(MenuItem item, string input, Action<string> messageConsumer)
 {
     public readonly MenuItem Item = item;
 
@@ -8,6 +8,8 @@ public class MenuSelection(MenuItem item, string input)
     
     private readonly string[] _tokens = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
+    private readonly Action<string> _messageConsumer = messageConsumer;
+    
     public bool IsExit()
     {
         return Item.Shortcut.Equals(Menu.ShortcutExit);
@@ -26,5 +28,10 @@ public class MenuSelection(MenuItem item, string input)
     public char GetChar(int i)
     {
         return GetString(i)[0];
+    }
+
+    public void AddMessage(string message)
+    {
+        messageConsumer(message);
     }
 }

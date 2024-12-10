@@ -7,20 +7,24 @@ public class Menu
     public static readonly string ShortcutExit = "E";
 
     private string MenuHeader { get; set; }
+    
     private readonly string _menuDivider;
+    
     private List<MenuItem> MenuItems { get; set; }
+    
+    private readonly List<string> Messages = [];
 
-    private MenuItem _menuItemExit = new()
+    private readonly MenuItem _menuItemExit = new()
     {
         Shortcut = ShortcutExit,
         Title = "Exit"
     };
 
-    public Action? beforeDraw;
+    private Action? _beforeDraw;
 
     public Menu(string menuHeader, List<MenuItem> menuItems, char dividerSymbol = '=')
     {
-        if (String.IsNullOrWhiteSpace(menuHeader))
+        if (string.IsNullOrWhiteSpace(menuHeader))
         {
             throw new ApplicationException("Menu header cannot be null or empty.");
         }
@@ -40,14 +44,15 @@ public class Menu
     public MenuSelection Run()
     {
         Exception? error = null;
+        MenuSelection? selection = null;
         while (true)
         {
             try
             {
-                DrawMenu(error);
+                DrawMenu(error, selection);
+                selection = null;
                 var choice = ProcessInput();
                 var menuItem = choice.Item;
-                var userInput = choice.Input;
                 menuItem.MenuItemAction?.Invoke();
                 menuItem.MenuItemInputAction?.Invoke(choice);
                 return choice;
@@ -76,13 +81,15 @@ public class Menu
             foreach (var menuItem in MenuItems.Where(menuItem => userInput.StartsWith(menuItem.Shortcut[..1], 
                          StringComparison.CurrentCultureIgnoreCase)))
             {
-                return new MenuSelection(menuItem, userInput.Substring(1).Trim());
+                return new MenuSelection(menuItem, 
+                    userInput.Substring(1).Trim(), 
+                    (message) => Messages.Add(message));
             }
             throw new InvalidOperationException("Please choose from what is available!");
         }
     }
 
-    private void DrawMenu(Exception? error)
+    private void DrawMenu(Exception? error, MenuSelection? selection)
     {
         if(ClearConssole)
         {
@@ -91,7 +98,7 @@ public class Menu
 
         try
         {
-            beforeDraw?.Invoke();
+            _beforeDraw?.Invoke();
         }
         catch (Exception any)
         {
@@ -101,11 +108,20 @@ public class Menu
         
         Console.WriteLine(MenuHeader);
         Console.WriteLine(_menuDivider);
+        
         if(error != null)
         {
             Console.WriteLine("ERROR: " + error);
             Console.WriteLine(_menuDivider);
         }
+        
+        Messages.ForEach(message =>
+        {
+            Console.WriteLine("MESSAGE: " + message);
+            Console.WriteLine(_menuDivider);
+        });
+        Messages.Clear();
+        
         foreach (var t in MenuItems)
         {
             Console.WriteLine(t);
@@ -116,7 +132,7 @@ public class Menu
 
     public Menu BeforeDraw(Action action)
     {
-        beforeDraw = action;
+        _beforeDraw = action;
         return this;
     }
 

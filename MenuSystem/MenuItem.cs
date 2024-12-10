@@ -3,10 +3,13 @@
 public class MenuItem
 {
     private string _title = default!;
+    
     private Func<string>? _titleFunc;
+    
     private string _shortcut = default!;
 
     public Action? MenuItemAction { get; set; }
+    
     public Action<MenuSelection>? MenuItemInputAction { get; set; }
 
     public string Title
@@ -32,7 +35,7 @@ public class MenuItem
         get => _shortcut;
         set
         {
-            if (String.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
                 throw new ArgumentException("Shortcut cannot be empty!");
             }

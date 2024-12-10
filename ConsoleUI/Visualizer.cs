@@ -106,7 +106,7 @@ public class Visualizer(TicTacTwoBrain gameInstance)
         var c = source[charPos];
         c = c switch
         {
-            PlaceholderPiece => PieceToChar(gameInstance.GameBoard[x, y]),
+            PlaceholderPiece => PieceToChar(gameInstance.GetPieceAt(x, y)),
             PlaceholderGrid => gameInstance.IsGridCell(x, y) ? PlaceholderGrid : ' ',
             PlaceholderCol => Index2Title(x),
             PlaceholderRow => Index2Title(y),

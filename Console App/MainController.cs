@@ -7,6 +7,8 @@ namespace Console_App;
 internal class MainController(IConfigRepository configRepository, ConfigController configController)
     : AbstractController
 {
+    private readonly TicTacTwoBrain _gameInstance = new();
+    
     public void Run()
     {
         Menu(Header,
@@ -31,10 +33,10 @@ internal class MainController(IConfigRepository configRepository, ConfigControll
         new ConfigEditController(configRepository, new GameConfiguration()).Run();
     }
 
-    private static void NewGame(GameConfiguration config)
+    private void NewGame(GameConfiguration config)
     {
-        var gameInstance = new TicTacTwoBrain(config);
-        var gameController = new GameController(gameInstance);
+        _gameInstance.LoadConfig(config);
+        var gameController = new GameController(_gameInstance);
         gameController.GameLoop();
     }
 

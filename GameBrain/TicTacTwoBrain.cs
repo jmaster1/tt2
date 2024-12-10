@@ -5,10 +5,15 @@ namespace GameBrain;
 
 public class TicTacTwoBrain
 {
-    private EGamePiece[,] _gameBoard;
+    private EGamePiece[,] _gameBoard = null!;
+    
+    public int Width => _gameBoard.GetLength(0);
+    
+    public int Height => _gameBoard.GetLength(1);
+    
     public EGamePiece NextMove { get; private set; } = EGamePiece.X;
 
-    private readonly GameConfiguration _gameConfiguration;
+    private GameConfiguration _gameConfiguration;
 
     private Rectangle _gridRect = Rectangle.Empty;
 
@@ -17,36 +22,6 @@ public class TicTacTwoBrain
     public readonly PlayerState PlayerO = new(EGamePiece.O);
 
     public PlayerState CurrentPlayer => NextMove == EGamePiece.X ? PlayerX : PlayerO;
-    
-    public TicTacTwoBrain(GameConfiguration gameConfiguration)
-    {
-        _gameConfiguration = gameConfiguration;
-        _gameBoard = new EGamePiece[_gameConfiguration.BoardWidth, _gameConfiguration.BoardHeight];
-        _gridRect.X = _gameConfiguration.GridX;
-        _gridRect.Y = _gameConfiguration.GridY;
-        _gridRect.Width = _gameConfiguration.GridWidth;
-        _gridRect.Height = _gameConfiguration.GridHeight;
-        PlayerX.PiecesLeft = PlayerO.PiecesLeft = _gameConfiguration.PlayerPieceCount;
-        PlayerX.MovesMade = PlayerO.MovesMade = 0;
-    }
-
-    public EGamePiece[,] GameBoard => GetBoard();
-
-    public int Width => _gameBoard.GetLength(0);
-    
-    public int Height => _gameBoard.GetLength(1);
-
-    private EGamePiece[,] GetBoard()
-    {
-        var copyOfBoard = new EGamePiece[_gameBoard.GetLength(0), _gameBoard.GetLength(1)];
-        for (var x = 0; x < Width; x++)
-        {
-            for (var y = 0; y < Height; y++){
-                copyOfBoard[x, y] = _gameBoard[x, y];
-            }
-        }
-        return copyOfBoard;
-    }
 
     public void PutPiece(int x, int y)
     {
@@ -143,5 +118,56 @@ public class TicTacTwoBrain
     public bool IsGridCell(int x, int y)
     {
         return _gridRect.Contains(x, y);
+    }
+
+    public EGamePiece GetPieceAt(int x, int y)
+    {
+        return _gameBoard[x, y];
+    }
+
+    public void LoadConfig(GameConfiguration gameConfiguration)
+    {
+        _gameConfiguration = gameConfiguration;
+        _gameBoard = new EGamePiece[_gameConfiguration.BoardWidth, _gameConfiguration.BoardHeight];
+        _gridRect.X = _gameConfiguration.GridX;
+        _gridRect.Y = _gameConfiguration.GridY;
+        _gridRect.Width = _gameConfiguration.GridWidth;
+        _gridRect.Height = _gameConfiguration.GridHeight;
+        PlayerX.PiecesLeft = PlayerO.PiecesLeft = _gameConfiguration.PlayerPieceCount;
+        PlayerX.MovesMade = PlayerO.MovesMade = 0;
+    }
+    
+    public GameSnapshot CreateSnapshot()
+    {
+        var pieces = 
+            from x in Enumerable.Range(0, Width)
+            from y in Enumerable.Range(0, Height)
+            where GetPieceAt(x, y) != EGamePiece.Empty
+            select new PieceSnapshot{ X = x, Y = y, Piece = GetPieceAt(x, y) };
+        var snapshot = new GameSnapshot
+        {
+            Configuration = _gameConfiguration,
+            PlayerX = PlayerX.CreateSnapshot(),
+            PlayerO = PlayerO.CreateSnapshot(),
+            NextMove = NextMove,
+            GridX = _gridRect.X,
+            GridY = _gridRect.Y,
+            Pieces = pieces.ToList()
+        };
+        return snapshot;
+    }
+    
+    public void LoadSnapshot(GameSnapshot snapshot)
+    {
+        LoadConfig(snapshot.Configuration);
+        _gridRect.X = snapshot.GridX;
+        _gridRect.Y = snapshot.GridY;
+        NextMove = snapshot.NextMove;
+        PlayerX.LoadSnapshot(snapshot.PlayerX);
+        PlayerO.LoadSnapshot(snapshot.PlayerO);
+        snapshot.Pieces?.ForEach(pieceSnapshot =>
+        {
+            _gameBoard[pieceSnapshot.X, pieceSnapshot.Y] = pieceSnapshot.Piece;
+        });
     }
 }

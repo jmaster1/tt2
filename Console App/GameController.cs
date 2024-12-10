@@ -22,10 +22,10 @@ internal class GameController(TicTacTwoBrain brain) : AbstractController
         .RunUntilExit();
     }
 
-    private void OnDump()
+    private void OnDump(MenuSelection input)
     {
-        var json = JsonStringSerializer.ToString(brain);
-        Console.WriteLine(json);
+        var json = JsonStringSerializer.ToString(brain.CreateSnapshot());
+        input.AddMessage(json);
     }
 
     private void Render()
@@ -43,28 +43,28 @@ internal class GameController(TicTacTwoBrain brain) : AbstractController
 
     private void OnMoveGrid(MenuSelection input)
     {
-        var x = readIndex(input, 0);
-        var y = readIndex(input, 1);
+        var x = ReadIndex(input, 0);
+        var y = ReadIndex(input, 1);
         brain.MoveGridTo(x, y);
     }
 
     private void OnMovePiece(MenuSelection input)
     {
-        var fromX = readIndex(input, 0);
-        var fromY = readIndex(input, 1);
-        var toX = readIndex(input, 2);
-        var toY = readIndex(input, 3);
+        var fromX = ReadIndex(input, 0);
+        var fromY = ReadIndex(input, 1);
+        var toX = ReadIndex(input, 2);
+        var toY = ReadIndex(input, 3);
         brain.MovePiece(fromX, fromY, toX, toY);
     }
 
     private void OnPutPiece(MenuSelection input)
     {
-        var x = readIndex(input, 0);
-        var y = readIndex(input, 1);
+        var x = ReadIndex(input, 0);
+        var y = ReadIndex(input, 1);
         brain.PutPiece(x, y);
     }
 
-    private static int readIndex(MenuSelection input, int i)
+    private static int ReadIndex(MenuSelection input, int i)
     {
         return Visualizer.Title2Index(input.GetChar(i));
     }
