@@ -7,7 +7,7 @@
 <div class="card" style="width: 18rem;">
     <div class="card-body">
         <h5 class="card-title">Create game</h5>
-        <form method="post">
+        <form method="post" asp-page-handler="CreateGame">
             <div class="mb-3">
                 <label asp-for="ConfigId" class="form-label"></label>
                 <select asp-for="ConfigId" class="form-control" asp-items="Model.ConfigSelectList"></select>

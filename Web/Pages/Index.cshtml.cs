@@ -24,16 +24,14 @@ public class IndexModel(IConfigRepository configRepository, IGameRepository game
         ConfigSelectList = new SelectList(selectListData, "id", "value");
     }
     
-    public IActionResult OnPost()
+    public IActionResult OnPostCreateGame()
     {
         var config = configRepository.GetConfigurationByName(ConfigId);
-        var snapshot = new GameSnapshot
-        {
-            Configuration = config,
-            Name = GameId
-        };
+        TicTacTwoBrain brain = new();
+        brain.LoadConfig(config);
+        var snapshot = brain.CreateSnapshot();
+        snapshot.Name = GameId;
         gameRepository.Save(snapshot);
-        OnGet();
-        return Page();
+        return RedirectToPage("./Game", new {GameId });
     }
 }

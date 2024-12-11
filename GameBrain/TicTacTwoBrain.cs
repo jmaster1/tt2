@@ -5,6 +5,12 @@ namespace GameBrain;
 
 public class TicTacTwoBrain
 {
+    private static readonly char[] IndexHeaders = "123456789ABCDEFGHIJKLMNOPQESTUVWXYZ".ToCharArray();
+    
+    public static char Index2Title(int xy) => IndexHeaders[xy];
+
+    public static int Title2Index(char t) =>  Array.IndexOf(IndexHeaders, t);
+    
     private EGamePiece[,] _gameBoard = null!;
     
     public int Width => _gameBoard.GetLength(0);
@@ -33,6 +39,10 @@ public class TicTacTwoBrain
     public int WinSequence => _gameConfiguration.WinSequence;
     
     public int MovePieceAfterNMoves => _gameConfiguration.MovePieceAfterNMoves;
+
+    public int GridX => _gridRect.X;
+    
+    public int GridY => _gridRect.Y;
 
     public void PutPiece(int x, int y)
     {
@@ -227,5 +237,15 @@ public class TicTacTwoBrain
         {
             _gameBoard[pieceSnapshot.X, pieceSnapshot.Y] = pieceSnapshot.Piece;
         });
+    }
+
+    public PlayerState? GetPlayer(EGamePiece piece)
+    {
+        return piece switch
+        {
+            EGamePiece.X => PlayerX,
+            EGamePiece.O => PlayerO,
+            _ => null
+        };
     }
 }

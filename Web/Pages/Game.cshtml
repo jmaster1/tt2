@@ -1,0 +1,122 @@
+﻿@page
+@using GameBrain
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model GameModel
+@{
+    ViewData["Title"] = "Game";
+}
+@{
+    var gameBrain = Model.Brain;
+    var width = gameBrain.Width;
+    var height = gameBrain.Height;
+}
+<style>
+    td {
+        width: 50px; 
+        height: 50px; 
+        text-align: center; 
+        vertical-align: middle; 
+        border: none;
+    }
+</style>
+
+@{
+    if (Model.Error != null)
+    {
+        <div class="alert alert-danger" role="alert">@Model.Error</div>        
+    }
+}
+
+<div class="card">
+    <div class="card-body">
+        
+        <div class="accordion accordion-flush" id="accordionFlushExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                        Game: @Model.GameId
+                    </button>
+                </h2>
+                <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <ul>
+                            <li>Select empty cell then "Move" to put new piece</li>
+                            <li>Select piece cell, empty cell then "Move" to move piece to target cell</li>
+                            <li>Select move grid direction then "Move" to move grid one </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group mb-3">
+            <span class="input-group-text">Win sequence:</span>
+            <span class="input-group-text">@gameBrain.WinSequence</span>
+            <span class="input-group-text">MovePieceAfterNMoves:</span>
+            <span class="input-group-text">@gameBrain.MovePieceAfterNMoves</span>
+            @{
+                void RenderPlayer(EGamePiece piece)
+                {
+                    var player = gameBrain.GetPlayer(piece);
+                    <span class="input-group-text"><strong>@piece</strong></span>
+                    <span class="input-group-text">Moves: @player!.MovesMade</span>
+                    <span class="input-group-text">Pieces left: @player.PiecesLeft</span>
+                }
+                RenderPlayer(EGamePiece.X);
+                RenderPlayer(EGamePiece.O);
+            }
+        </div>
+        
+        <form method="post" asp-page-handler="MakeMove">
+            <input type="hidden" name="GameId" value="@Model.GameId"/>
+            
+            <div class="input-group mb-3">
+                <span class="input-group-text">Move grid</span>
+                
+                <input type="radio" class="btn-check" name="GridMoveDir" value="0 -1" id="GridMoveUp">
+                <label class="btn btn-outline-primary" for="GridMoveUp">↑</label>
+                
+                <input type="radio" class="btn-check" name="GridMoveDir" value="-1 0" id="GridMoveLeft">
+                <label class="btn btn-outline-primary" for="GridMoveLeft">←</label>
+                
+                <input type="radio" class="btn-check" name="GridMoveDir" value="-1 0" id="GridMoveDown">
+                <label class="btn btn-outline-primary" for="GridMoveDown">↓</label>
+                
+                <input type="radio" class="btn-check" name="GridMoveDir" value="-1 0" id="GridMoveRight">
+                <label class="btn btn-outline-primary" for="GridMoveRight">→</label>
+            </div>
+            
+            <table style="border-collapse: collapse; margin: auto;">
+
+                <tr>
+                    <td></td>
+                    @for (var x = 0; x < width; x++)
+                    {
+                        <td>@TicTacTwoBrain.Index2Title(x)</td>
+                    }
+                </tr>
+
+                @for (var y = 0; y < height; y++)
+                {
+                    <tr>
+                        <td>@TicTacTwoBrain.Index2Title(y)</td>
+                        @for (var x = 0; x < width; x++)
+                        {
+                            var piece = gameBrain.GetPieceAt(x, y);
+                            var gridCell = gameBrain.IsGridCell(x, y);
+                            var enabled = gridCell && (piece == EGamePiece.Empty || piece == gameBrain.NextMove);
+                            var inputName = piece == EGamePiece.Empty ? "CellRefEmpty" : "CellRefPiece";
+                            <td>
+                                <input type="radio" class="btn-check" name="@inputName" value="@x @y" 
+                                       id="cell_@x@y" @(enabled ? "" : "disabled")>
+                                <label class="btn btn-outline-@(gridCell ? "primary" : "secondary") w-100 h-100 d-flex" 
+                                       for="cell_@x@y">@Model.GetPieceText(piece)</label>
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+            <button type="submit" class="btn btn-primary">Move</button>
+        </form>
+    </div>
+</div>

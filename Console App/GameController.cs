@@ -88,6 +88,6 @@ internal class GameController(TicTacTwoBrain brain, IGameRepository gameReposito
 
     private static int ReadIndex(MenuSelection input, int i)
     {
-        return Visualizer.Title2Index(input.GetChar(i));
+        return TicTacTwoBrain.Title2Index(input.GetChar(i));
     }
 }

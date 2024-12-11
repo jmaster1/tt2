@@ -6,12 +6,6 @@ using GameBrain;
 
 public class Visualizer(TicTacTwoBrain gameInstance)
 {
-    private static readonly char[] IndexHeaders = "123456789ABCDEFGHIJKLMNOPQESTUVWXYZ".ToCharArray();
-    
-    public static char Index2Title(int xy) => IndexHeaders[xy];
-
-    public static int Title2Index(char t) =>  Array.IndexOf(IndexHeaders, t);
-        
     private static readonly string[] Template =
     [
         "    X   X  ",
@@ -108,8 +102,8 @@ public class Visualizer(TicTacTwoBrain gameInstance)
         {
             PlaceholderPiece => PieceToChar(gameInstance.GetPieceAt(x, y)),
             PlaceholderGrid => gameInstance.IsGridCell(x, y) ? PlaceholderGrid : ' ',
-            PlaceholderCol => Index2Title(x),
-            PlaceholderRow => Index2Title(y),
+            PlaceholderCol => TicTacTwoBrain.Index2Title(x),
+            PlaceholderRow => TicTacTwoBrain.Index2Title(y),
             _ => c
         };
         _sb.Append(c);
