@@ -9,9 +9,9 @@ namespace Web2.Pages;
 public class IndexModel(IConfigRepository configRepository, IGameRepository gameRepository) : PageModel
 {
     public SelectList ConfigSelectList { get; set; } = default!;
-    
+
     [BindProperty]
-    public int ConfigId { get; set; }
+    public string ConfigId { get; set; } = null!;
 
     [BindProperty] 
     public string GameId { get; set; } = null!;
@@ -26,9 +26,14 @@ public class IndexModel(IConfigRepository configRepository, IGameRepository game
     
     public IActionResult OnPost()
     {
-        GameSnapshot snapshot = new GameSnapshot();
-        snapshot.Name = GameId;
+        var config = configRepository.GetConfigurationByName(ConfigId);
+        var snapshot = new GameSnapshot
+        {
+            Configuration = config,
+            Name = GameId
+        };
         gameRepository.Save(snapshot);
+        OnGet();
         return Page();
     }
 }
