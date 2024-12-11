@@ -20,6 +20,17 @@ public class GameModel(IGameRepository gameRepository) : PageModel
     
     [BindProperty]
     public string GridMoveDir { get; set; } = null!;
+    
+    string s = "←	Leftwards Arrow	U+2190	&#8592;
+↑	Upwards Arrow	U+2191	&#8593;
+→	Rightwards Arrow	U+2192	&#8594;
+↓	Downwards Arrow	U+2193	&#8595;
+↔	Left Right Arrow	U+2194	&#8596;
+↕	Up Down Arrow	U+2195	&#8597;
+↖	North West Arrow	U+2196	&#8598;
+↗	North East Arrow	U+2197	&#8599;
+↘	South East Arrow	U+2198	&#8600;
+↙	South West Arrow	U+2199	&#8601;"
 
     public TicTacTwoBrain Brain = new();
     
