@@ -4,7 +4,7 @@ namespace DAL;
 
 public class ConfigRepositoryPredefined : IConfigRepository
 {
-    private readonly List<GameConfiguration> _gameConfigurations =
+    private static readonly List<GameConfiguration> GameConfigurations =
     [
         new()
         {
@@ -27,19 +27,19 @@ public class ConfigRepositoryPredefined : IConfigRepository
 
     public List<string> GetConfigurationNames()
     {
-        return _gameConfigurations
+        return GameConfigurations
             .OrderBy(x=> x.Name)
             .Select(config => config.Name)
             .ToList();
     }
     
-    public GameConfiguration GetConfigurationByName(string name)
+    public GameConfiguration Load(string name)
     {
-        return _gameConfigurations
+        return GameConfigurations
             .Single(c => c.Name == name);
     }
 
-    public void SaveConfiguration(GameConfiguration gameConfig)
+    public void Save(GameConfiguration gameConfig)
     {
         throw new NotImplementedException();
     }

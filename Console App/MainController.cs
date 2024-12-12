@@ -16,11 +16,21 @@ internal class MainController(
     public void Run()
     {
         Menu(Header,
-            MenuItem("N", "New game (select config)", OnNewGameSelectConfig),
-            MenuItem("D", "New game (default config)", OnNewGameDefaultConfig),
-            MenuItem("L", "Load last saved game", OnLoadGame),
-            MenuItem("A", "Add configuration", OnAddConfiguration),
-            MenuItem("C", "Edit configuration", OnEditConfiguration)
+            MenuItem("N", 
+                "New game (select config)", 
+                OnNewGameSelectConfig),
+            MenuItem("D", 
+                "New game (default config)", 
+                OnNewGameDefaultConfig),
+            MenuItem("L", 
+                "Load last saved game", 
+                OnLoadGame),
+            MenuItem("A", 
+                "Add configuration", 
+                OnAddConfiguration),
+            MenuItem("C", 
+                "Edit configuration", 
+                OnEditConfiguration)
         ).RunUntilExit();
     }
 
@@ -57,7 +67,7 @@ internal class MainController(
 
     private void OnNewGameDefaultConfig()
     {
-        NewGame(configRepository.GetConfigurationByName(
+        NewGame(configRepository.Load(
             configRepository.GetConfigurationNames()[0]));
     }
 }

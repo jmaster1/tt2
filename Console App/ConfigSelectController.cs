@@ -11,7 +11,7 @@ internal class ConfigSelectController(IConfigRepository configRepository) : Abst
     {
         var items = configRepository.GetConfigurationNames()
             .Select((name, index) => MenuItem((index + 1).ToString(), name, 
-                () => action(configRepository.GetConfigurationByName(name))))
+                () => action(configRepository.Load(name))))
             .ToArray();
         new Menu(Header, [.. items]).Run();
     }

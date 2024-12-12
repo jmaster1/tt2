@@ -16,9 +16,7 @@ public abstract class AbstractRepositoryJson<T>
         return Directory
             .GetFiles(_basePath, "*" + GetExtension())
             .Select(fullFileName =>
-                Path.GetFileNameWithoutExtension(
-                    Path.GetFileNameWithoutExtension(fullFileName)
-                )
+                 Path.GetFileNameWithoutExtension(fullFileName[..^GetExtension().Length])
             )
             .ToList();
     }

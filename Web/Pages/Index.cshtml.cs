@@ -36,7 +36,7 @@ public class IndexModel(
     public IActionResult OnPostCreateGame()
     {
         var gameId = Guid.NewGuid().ToString();
-        var config = configRepository.GetConfigurationByName(ConfigId);
+        var config = configRepository.Load(ConfigId);
         var brain = new TicTacTwoBrain().LoadConfig(config);
         var snapshot = brain.CreateSnapshot(gameId);
         gameRepository.Save(snapshot);

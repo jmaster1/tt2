@@ -10,12 +10,12 @@ public class ConfigRepositoryJson : AbstractRepositoryJson<GameConfiguration>, I
         return ListNames();
     }
 
-    public GameConfiguration GetConfigurationByName(string name)
+    public GameConfiguration Load(string name)
     {
         return LoadByName(name);
     }
 
-    public void SaveConfiguration(GameConfiguration gameConfig)
+    public void Save(GameConfiguration gameConfig)
     {
         Save(gameConfig, gameConfig.Name);
     }
@@ -26,9 +26,9 @@ public class ConfigRepositoryJson : AbstractRepositoryJson<GameConfiguration>, I
         if (names.Count != 0) return;
         var hardcodedRepo = new ConfigRepositoryPredefined();
         var configurationNames = hardcodedRepo.GetConfigurationNames();
-        foreach (var gameConfig in configurationNames.Select(name => hardcodedRepo.GetConfigurationByName(name)))
+        foreach (var gameConfig in configurationNames.Select(name => hardcodedRepo.Load(name)))
         {
-            SaveConfiguration(gameConfig);
+            Save(gameConfig);
         }
     }
 

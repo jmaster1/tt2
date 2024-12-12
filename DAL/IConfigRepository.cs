@@ -6,7 +6,7 @@ public interface IConfigRepository
 {
     List<string> GetConfigurationNames();
 
-    GameConfiguration GetConfigurationByName(string name);
+    GameConfiguration Load(string name);
 
-    void SaveConfiguration(GameConfiguration gameConfig);
+    void Save(GameConfiguration gameConfig);
 }

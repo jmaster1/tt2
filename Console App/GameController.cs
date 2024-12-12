@@ -14,12 +14,24 @@ internal class GameController(TicTacTwoBrain brain, IGameRepository gameReposito
     internal void GameLoop()
     {
         Menu(Header,
-            MenuItem("P <x> <y>", "Put piece at specified cell", OnPutPiece),
-            MenuItem("M <fromX> <fromY> <toX> <toY>", "Move piece to another cell", OnMovePiece),
-            MenuItem("G <x> <y>", "Move grid to specified cell", OnMoveGrid),
-            MenuItem("D", "Dump game", OnDumpGame),
-            MenuItem("S", "Save game", OnSaveGame),
-            MenuItem("L", "Load last saved game", OnLoadGame)
+            MenuItem("P <x> <y>", 
+                "Put piece at specified cell", 
+                OnPutPiece),
+            MenuItem("M <fromX> <fromY> <toX> <toY>", 
+                "Move piece to another cell", 
+                OnMovePiece),
+            MenuItem("G <x> <y>", 
+                "Move grid to specified cell", 
+                OnMoveGrid),
+            MenuItem("D", 
+                "Dump game", 
+                OnDumpGame),
+            MenuItem("S", 
+                "Save game", 
+                OnSaveGame),
+            MenuItem("L", 
+                "Load last saved game", 
+                OnLoadGame)
         )
         .BeforeDraw(Render)
         .RunUntilExit();
