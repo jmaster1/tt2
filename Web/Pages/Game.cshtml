@@ -26,110 +26,115 @@
     }
 }
 
-<div class="card">
-    <div class="card-body">
-        
-        <div class="accordion accordion-flush" id="accordionFlushExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="flush-headingOne">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">Game: @Model.GameId</span>
-                            <span class="input-group-text">Win sequence: @brain.WinSequence</span>
-                            <span class="input-group-text">MovePieceAfterNMoves: @brain.MovePieceAfterNMoves</span>
-                            @{
-                                void RenderPlayer(EGamePiece piece)
-                                {
-                                    var player = brain.GetPlayer(piece);
-                                    var style = player!.Type == brain.NextMove ? "background-color: lightgray" : "";
-                                    <span class="input-group-text" style="@style"><strong>@piece</strong></span>
-                                    <span class="input-group-text" style="@style">Moves: @player.MovesMade</span>
-                                    <span class="input-group-text" style="@style">Pieces left: @player.PiecesLeft</span>
-                                }
+@{
+    if (Model.Loaded)
+    {
+        <div class="card">
+            <div class="card-body">
 
-                                RenderPlayer(EGamePiece.X);
-                                RenderPlayer(EGamePiece.O);
-                            }
+                <div class="accordion accordion-flush" id="accordionFlushExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">You: <strong>@Model.PlayerToken!.Type</strong></span>
+                                    <span class="input-group-text">Win sequence: @brain.WinSequence</span>
+                                    <span class="input-group-text">MovePieceAfterNMoves: @brain.MovePieceAfterNMoves</span>
+                                    @{
+                                        void RenderPlayer(EGamePiece piece)
+                                        {
+                                            var player = brain.GetPlayer(piece);
+                                            var style = player!.Type == brain.NextMove ? "background-color: lightgray" : "";
+                                            <span class="input-group-text" style="@style"><strong>@piece</strong></span>
+                                            <span class="input-group-text" style="@style">Moves: @player.MovesMade</span>
+                                            <span class="input-group-text" style="@style">Pieces left: @player.PiecesLeft</span>
+                                        }
+
+                                        RenderPlayer(EGamePiece.X);
+                                        RenderPlayer(EGamePiece.O);
+                                    }
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Put piece: select empty cell, then "Move"</li>
+                                    <li>Move piece: select piece cell and empty target cell, then "Move"</li>
+                                    <li>Move grid: select move grid direction, then "Move"</li>
+                                </ul>
+                            </div>
                         </div>
-                    </button>
-                </h2>
-                <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                    <div class="accordion-body">
-                        <ul>
-                            <li>Put piece: select empty cell, then "Move"</li>
-                            <li>Move piece: select piece cell and empty target cell, then "Move"</li>
-                            <li>Move grid: select move grid direction, then "Move"</li>
-                        </ul>
                     </div>
                 </div>
+
+                <form method="post" asp-page-handler="MakeMove">
+                    <input type="hidden" name="Token" value="@Model.Token"/>
+
+                    @{
+                        if (won)
+                        {
+                            <div class="alert alert-success" role="alert">Winner: @brain.Winner</div>
+                        }
+                        else
+                        {
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Move grid</span>
+                                @foreach (var dir in GameModel.Dirs)
+                                {
+                                    <input type="radio" class="btn-check" name="GridMoveDir" value="@dir.Value" id="@dir.Id">
+                                    <label class="btn btn-outline-primary" for="@dir.Id">@dir.Arrow</label>
+                                }
+                            </div>
+                        }
+                    }
+
+
+                    <div class="input-group mb-3">
+                        <table style="border-collapse: collapse; margin: auto;">
+
+                            <tr>
+                                <td></td>
+                                @for (var x = 0; x < brain.Width; x++)
+                                {
+                                    <td>@TicTacTwoBrain.Index2Title(x)</td>
+                                }
+                            </tr>
+
+                            @for (var y = 0; y < brain.Height; y++)
+                            {
+                                <tr>
+                                    <td>@TicTacTwoBrain.Index2Title(y)</td>
+                                    @for (var x = 0; x < brain.Width; x++)
+                                    {
+                                        var piece = brain.GetPieceAt(x, y);
+                                        var gridCell = brain.IsGridCell(x, y);
+                                        var enabled = gridCell && (piece == EGamePiece.Empty || piece == brain.NextMove);
+                                        var inputName = piece == EGamePiece.Empty ? "CellRefEmpty" : "CellRefPiece";
+                                        <td>
+                                            <input type="radio" class="btn-check" name="@inputName" value="@x @y"
+                                                   id="cell_@x@y" @(enabled ? "" : "disabled")>
+                                            <label class="btn btn-outline-@(gridCell ? "primary" : "secondary") w-100 h-100 d-flex"
+                                                   for="cell_@x@y">@Model.GetPieceText(piece)</label>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        @{
+                            if (!won)
+                            {
+                                <button type="submit" class="btn btn-primary">Move</button>
+                            }
+                        }
+                        <a class="btn btn-secondary" role="button" href="?Token=@Model.Token">⟳ Refresh</a>
+                    </div>
+                </form>
             </div>
         </div>
-        
-        <form method="post" asp-page-handler="MakeMove">
-            <input type="hidden" name="GameId" value="@Model.GameId"/>
-
-            @{
-                if (won)
-                {
-                    <div class="alert alert-success" role="alert">Winner: @brain.Winner</div>
-                }
-                else
-                {
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">Move grid</span>
-                        @foreach (var dir in GameModel.Dirs)
-                        {
-                            <input type="radio" class="btn-check" name="GridMoveDir" value="@dir.Value" id="@dir.Id">
-                            <label class="btn btn-outline-primary" for="@dir.Id">@dir.Arrow</label>    
-                        }
-                    </div>
-                }
-            }
-
-
-            <div class="input-group mb-3">
-                <table style="border-collapse: collapse; margin: auto;">
-
-                    <tr>
-                        <td></td>
-                        @for (var x = 0; x < brain.Width; x++)
-                        {
-                            <td>@TicTacTwoBrain.Index2Title(x)</td>
-                        }
-                    </tr>
-
-                    @for (var y = 0; y < brain.Height; y++)
-                    {
-                        <tr>
-                            <td>@TicTacTwoBrain.Index2Title(y)</td>
-                            @for (var x = 0; x < brain.Width; x++)
-                            {
-                                var piece = brain.GetPieceAt(x, y);
-                                var gridCell = brain.IsGridCell(x, y);
-                                var enabled = gridCell && (piece == EGamePiece.Empty || piece == brain.NextMove);
-                                var inputName = piece == EGamePiece.Empty ? "CellRefEmpty" : "CellRefPiece";
-                                <td>
-                                    <input type="radio" class="btn-check" name="@inputName" value="@x @y" 
-                                           id="cell_@x@y" @(enabled ? "" : "disabled")>
-                                    <label class="btn btn-outline-@(gridCell ? "primary" : "secondary") w-100 h-100 d-flex" 
-                                           for="cell_@x@y">@Model.GetPieceText(piece)</label>
-                                </td>
-                            }
-                        </tr>
-                    }
-                </table>
-            </div>
-
-            <div class="input-group mb-3">
-                @{
-                    if (!won)
-                    {
-                        <button type="submit" class="btn btn-primary">Move</button>
-                    }
-                }
-                <a class="btn" role="button" href="?GameId=@Model.GameId">⟳ Refresh</a>
-            </div>
-        </form>
-    </div>
-</div>
+    }
+}

@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Web2.Pages;
 
-public class GameModel(IGameRepository gameRepository) : PageModel
+public class GameModel(
+    IGameRepository gameRepository, 
+    IPlayerTokenRepository playerTokenRepository) : PageModel
 {
     public class Dir(char arrow, int dx, int dy)
     {
@@ -31,7 +33,7 @@ public class GameModel(IGameRepository gameRepository) : PageModel
     public string? Error { get; set; }
     
     [BindProperty(SupportsGet = true)] 
-    public string GameId { get; set; } = null!;
+    public string Token { get; set; } = null!;
     
     [BindProperty]
     public string CellRefEmpty { get; set; } = null!;
@@ -44,13 +46,11 @@ public class GameModel(IGameRepository gameRepository) : PageModel
     
     public TicTacTwoBrain Brain = new();
     
-    public void OnGet()
-    {
-        var snapshot = gameRepository.Load(GameId);
-        Brain.LoadSnapshot(snapshot!);
-    }
+    public bool Loaded { get; set; }
+    
+    public PlayerToken? PlayerToken { get; set; }
 
-    private static (int x, int y)? ParseXY(string? input)
+    private static (int x, int y)? ParseXy(string? input)
     {
         if (input == null)
         {
@@ -62,16 +62,46 @@ public class GameModel(IGameRepository gameRepository) : PageModel
         return (x, y);
     }
     
+    private void Load()
+    {
+        try
+        {
+            PlayerToken = playerTokenRepository.Load(Token);
+        }
+        catch (Exception)
+        {
+            throw new InvalidDataException("Invalid token");
+        }
+        
+        var snapshot = gameRepository.Load(PlayerToken!.GameId);
+        Brain.LoadSnapshot(snapshot!);
+        Loaded = true;
+    }
+
+    public void OnGet()
+    {
+        try
+        {
+            Load();
+        }
+        catch (Exception any)
+        {
+            Error = any.Message;
+        }
+    }
+    
     public IActionResult OnPostMakeMove()
     {
         try
         {
-            var snapshot = gameRepository.Load(GameId);
-            Brain.LoadSnapshot(snapshot!);
-
-            var piecePos = ParseXY(CellRefPiece);
-            var emptyPos = ParseXY(CellRefEmpty);
-            var gridMoveDir = ParseXY(GridMoveDir);
+            Load();
+            if (Brain.NextMove != PlayerToken!.Type)
+            {
+                throw new Exception("That's not your turn to make move");
+            }
+            var piecePos = ParseXy(CellRefPiece);
+            var emptyPos = ParseXy(CellRefEmpty);
+            var gridMoveDir = ParseXy(GridMoveDir);
             if (gridMoveDir != null)
             {
                 Brain.MoveGridTo(gridMoveDir.Value.x + Brain.GridX, gridMoveDir.Value.y + Brain.GridY);
@@ -87,8 +117,7 @@ public class GameModel(IGameRepository gameRepository) : PageModel
                 throw new Exception("No input provided to make move");
             }
             
-            snapshot = Brain.CreateSnapshot();
-            snapshot.Name = GameId;
+            var snapshot = Brain.CreateSnapshot(PlayerToken!.GameId);
             gameRepository.Save(snapshot);
         }
         catch (Exception any)

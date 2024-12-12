@@ -1,10 +1,27 @@
 ﻿@page
+@using GameBrain
 @model IndexModel
 @{
     ViewData["Title"] = "Tic-Tac-Two";
 }
 
-<div class="card" style="width: 18rem;">
+@{
+    void RenderPlayerToken(PlayerToken? pt)
+    {
+        if (pt != null)
+        {
+            <div class="alert alert-success" role="alert">
+                Player <strong>@pt.Type</strong> token: @pt.Token
+                <a class="btn btn-primary" role="button" href="./Game?Token=@pt.Token">Join</a>
+            </div>
+        }
+    }
+
+    RenderPlayerToken(Model.XPlayerToken);
+    RenderPlayerToken(Model.OPlayerToken);
+}
+
+<div class="card">
     <div class="card-body">
         <h5 class="card-title">Create game</h5>
         <form method="post" asp-page-handler="CreateGame">
@@ -12,11 +29,20 @@
                 <label asp-for="ConfigId" class="form-label"></label>
                 <select asp-for="ConfigId" class="form-control" asp-items="Model.ConfigSelectList"></select>
             </div>
-            <div class="mb-3">
-                <label asp-for="GameId" class="form-label"></label>
-                <input asp-for="GameId" class="form-control"></input>
-            </div>
             <button type="submit" class="btn btn-primary">Create game</button>
+        </form>
+    </div>
+</div>
+<p>or</p>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Join game</h5>
+        <form method="get" asp-page="Game">
+            <div class="mb-3">
+                <label for="Token" class="form-label">Token</label>
+                <input type="text" class="form-control" id="Token">
+            </div>
+            <button type="submit" class="btn btn-primary">Join game</button>
         </form>
     </div>
 </div>

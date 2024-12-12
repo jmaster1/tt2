@@ -190,7 +190,7 @@ public class TicTacTwoBrain
         return _gameBoard[x, y];
     }
 
-    public void LoadConfig(GameConfiguration gameConfiguration)
+    public TicTacTwoBrain LoadConfig(GameConfiguration gameConfiguration)
     {
         _gameConfiguration = gameConfiguration;
         _gameBoard = new EGamePiece[_gameConfiguration.BoardWidth, _gameConfiguration.BoardHeight];
@@ -201,9 +201,10 @@ public class TicTacTwoBrain
         PlayerX.PiecesLeft = PlayerO.PiecesLeft = _gameConfiguration.PlayerPieceCount;
         PlayerX.MovesMade = PlayerO.MovesMade = 0;
         Winner = EGamePiece.Empty;
+        return this;
     }
     
-    public GameSnapshot CreateSnapshot()
+    public GameSnapshot CreateSnapshot(string? name = null)
     {
         var pieces = 
             from x in Enumerable.Range(0, Width)
@@ -212,6 +213,7 @@ public class TicTacTwoBrain
             select new PieceSnapshot{ X = x, Y = y, Piece = GetPieceAt(x, y) };
         var snapshot = new GameSnapshot
         {
+            Name = name!,
             Configuration = _gameConfiguration,
             PlayerX = PlayerX.CreateSnapshot(),
             PlayerO = PlayerO.CreateSnapshot(),
@@ -224,7 +226,7 @@ public class TicTacTwoBrain
         return snapshot;
     }
     
-    public void LoadSnapshot(GameSnapshot snapshot)
+    public TicTacTwoBrain LoadSnapshot(GameSnapshot snapshot)
     {
         LoadConfig(snapshot.Configuration);
         _gridRect.X = snapshot.GridX;
@@ -237,6 +239,7 @@ public class TicTacTwoBrain
         {
             _gameBoard[pieceSnapshot.X, pieceSnapshot.Y] = pieceSnapshot.Piece;
         });
+        return this;
     }
 
     public PlayerState? GetPlayer(EGamePiece piece)

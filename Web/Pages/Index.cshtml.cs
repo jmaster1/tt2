@@ -6,17 +6,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Web2.Pages;
 
-public class IndexModel(IConfigRepository configRepository, IGameRepository gameRepository) : PageModel
+public class IndexModel(
+    IConfigRepository configRepository, 
+    IGameRepository gameRepository, 
+    IPlayerTokenRepository playerTokenRepository) : PageModel
 {
     public SelectList ConfigSelectList { get; set; } = default!;
 
     [BindProperty]
     public string ConfigId { get; set; } = null!;
+    
+    public PlayerToken? XPlayerToken { get; set; }
+    
+    public PlayerToken? OPlayerToken { get; set; }
 
-    [BindProperty] 
-    public string GameId { get; set; } = null!;
-
-    public void OnGet()
+    private void Load()
     {
         var selectListData = configRepository.GetConfigurationNames()
             .Select(name => new {id = name, value = name})
@@ -24,14 +28,35 @@ public class IndexModel(IConfigRepository configRepository, IGameRepository game
         ConfigSelectList = new SelectList(selectListData, "id", "value");
     }
     
+    public void OnGet()
+    {
+        Load();
+    }
+    
     public IActionResult OnPostCreateGame()
     {
+        var gameId = Guid.NewGuid().ToString();
         var config = configRepository.GetConfigurationByName(ConfigId);
-        TicTacTwoBrain brain = new();
-        brain.LoadConfig(config);
-        var snapshot = brain.CreateSnapshot();
-        snapshot.Name = GameId;
+        var brain = new TicTacTwoBrain().LoadConfig(config);
+        var snapshot = brain.CreateSnapshot(gameId);
         gameRepository.Save(snapshot);
-        return RedirectToPage("./Game", new {GameId });
+        
+        XPlayerToken = CreatePlayerToken(EGamePiece.X, gameId);
+        OPlayerToken = CreatePlayerToken(EGamePiece.O, gameId);
+
+        Load();
+        return Page();
+    }
+
+    private PlayerToken CreatePlayerToken(EGamePiece type, string gameId)
+    {
+        var playerToken = new PlayerToken()
+        {
+            Type = type,
+            GameId = gameId,
+            Token = Guid.NewGuid().ToString()
+        };
+        playerTokenRepository.Save(playerToken);
+        return playerToken;
     }
 }
