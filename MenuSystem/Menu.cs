@@ -6,7 +6,7 @@ public class Menu
 
     public const string ShortcutExit = "E";
 
-    private string MenuHeader { get; set; }
+    private string MenuHeader { get; }
     
     private readonly string _menuDivider;
     
@@ -68,9 +68,9 @@ public class Menu
 
     private MenuSelection ProcessInput()
     {
-        var userInput = "";
+        string userInput;
         {            
-            userInput = Console.ReadLine();
+            userInput = Console.ReadLine()!;
             if (string.IsNullOrWhiteSpace(userInput))
             {
                 throw new InvalidOperationException("Please choose an option!");

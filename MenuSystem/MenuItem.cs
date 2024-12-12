@@ -3,9 +3,7 @@
 public class MenuItem
 {
     private string _title = default!;
-    
-    private Func<string>? _titleFunc;
-    
+
     private string _shortcut = default!;
 
     public Action? MenuItemAction { get; set; }
@@ -14,15 +12,11 @@ public class MenuItem
 
     public string Title
     {
-        get => _titleFunc == null ? _title : _titleFunc.Invoke();
+        get => TitleFunc == null ? _title : TitleFunc.Invoke();
         set => _title = value;
     }
     
-    public Func<string>? TitleFunc
-    {
-        get => _titleFunc;
-        set => _titleFunc = value;
-    }
+    public Func<string>? TitleFunc { get; set; }
 
     public string Shortcut
     {
