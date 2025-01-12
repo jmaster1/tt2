@@ -15,4 +15,8 @@
       <ProjectReference Include="..\MenuSystem\MenuSystem.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Core.System.Windows.Forms" Version="1.0.0-alpha6" />
+    </ItemGroup>
+
 </Project>

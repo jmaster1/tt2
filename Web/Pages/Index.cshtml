@@ -33,7 +33,9 @@
         </form>
     </div>
 </div>
+
 <p>or</p>
+
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Join game</h5>
@@ -43,6 +45,21 @@
                 <input type="text" class="form-control" id="Token" name="Token">
             </div>
             <button type="submit" class="btn btn-primary">Join game</button>
+        </form>
+    </div>
+</div>
+
+<p>or</p>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Load game from snapshot</h5>
+        <form method="post" asp-page-handler="LoadGameSnapshot">
+            <div class="mb-3">
+                <label for="Token" class="form-label">Game snapshot (json)</label>
+                <textarea class="form-control" asp-for="GameSnapshotJson" rows="10"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Load game</button>
         </form>
     </div>
 </div>

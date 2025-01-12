@@ -19,6 +19,9 @@ public class IndexModel(
     public PlayerToken? XPlayerToken { get; set; }
     
     public PlayerToken? OPlayerToken { get; set; }
+    
+    [BindProperty]
+    public string GameSnapshotJson { get; set; } = null!;
 
     private void Load()
     {
@@ -58,5 +61,17 @@ public class IndexModel(
         };
         playerTokenRepository.Save(playerToken);
         return playerToken;
+    }
+
+    public IActionResult OnPostLoadGameSnapshot()
+    {
+        var snapshot = JsonStringSerializer.FromString<GameSnapshot>(GameSnapshotJson);
+        var gameId = Guid.NewGuid().ToString();
+        snapshot!.Name = gameId;
+        gameRepository.Save(snapshot);
+        XPlayerToken = CreatePlayerToken(EGamePiece.X, gameId);
+        OPlayerToken = CreatePlayerToken(EGamePiece.O, gameId);
+        Load();
+        return Page();
     }
 }
