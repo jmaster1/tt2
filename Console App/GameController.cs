@@ -3,7 +3,7 @@ using DAL;
 using GameBrain;
 using MenuSystem;
 using static MenuSystem.MenuBuilder;
-using System.Windows.Forms;
+using TextCopy;
 
 namespace Console_App;
 
@@ -56,7 +56,7 @@ internal class GameController(TicTacTwoBrain brain, IGameRepository gameReposito
     {
         var json = JsonStringSerializer.ToString(brain.CreateSnapshot());
         input.AddMessage("Game snapshot json (copied to clipboard)\n" + json);
-        Clipboard.SetText(json);
+        ClipboardService.SetText(json);
     }
 
     private void Render()
